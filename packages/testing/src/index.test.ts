@@ -170,7 +170,7 @@ describe("checkProperty", () => {
         amount: fc.integer({ min: 0, max: 100000 }),
         country: fc.constantFrom("US", "UK", "DE"),
       }),
-      property: (input, result) => {
+      property: (_input, result) => {
         // Property: result should always be OK for valid input
         return result.status === "OK";
       },
@@ -187,9 +187,10 @@ describe("checkProperty", () => {
         amount: fc.integer({ min: 0, max: 100000 }),
         country: fc.constantFrom("US", "UK"),
       }),
-      property: (input, result) => {
+      property: (_input, result) => {
         // Property: risk should always be high (this will fail)
-        return result.data?.risk === "high";
+        const data = result.data as { risk?: string } | null;
+        return data?.risk === "high";
       },
       numRuns: 50,
     });
