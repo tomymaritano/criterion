@@ -140,6 +140,22 @@ const kycDecision = defineDecision({
       explain: () => "Domestic PEP status",
     },
     {
+      id: "pep-unclassified",
+      when: (input, profile) =>
+        profile.pepRequiresEDD && input.isPEP && !input.pepLevel,
+      emit: () => ({
+        riskLevel: "HIGH",
+        decision: "MANUAL_REVIEW",
+        requiredActions: [
+          "Classify PEP level",
+          "Compliance officer review required",
+        ],
+        flags: ["PEP_UNCLASSIFIED"],
+        reason: "PEP without classification requires manual review",
+      }),
+      explain: () => "PEP status without level classification",
+    },
+    {
       id: "high-risk-country",
       when: (input, profile) =>
         profile.highRiskCountries.includes(input.country),
@@ -177,7 +193,7 @@ const kycDecision = defineDecision({
     },
     {
       id: "standard-approval",
-      when: (input) => input.sourceOfFundsVerified,
+      when: (input) => !input.isPEP && input.sourceOfFundsVerified,
       emit: () => ({
         riskLevel: "LOW",
         decision: "APPROVE",
@@ -185,11 +201,11 @@ const kycDecision = defineDecision({
         flags: [],
         reason: "All KYC requirements met - standard risk profile",
       }),
-      explain: () => "All requirements satisfied",
+      explain: () => "Non-PEP with verified source of funds",
     },
     {
       id: "pending-sof",
-      when: () => true,
+      when: (input) => !input.isPEP,
       emit: () => ({
         riskLevel: "LOW",
         decision: "APPROVE",
@@ -197,7 +213,22 @@ const kycDecision = defineDecision({
         flags: ["SOF_PENDING"],
         reason: "Approved pending source of funds verification",
       }),
-      explain: () => "Default: approved with pending SOF",
+      explain: () => "Non-PEP approved with pending SOF",
+    },
+    {
+      id: "pep-fallback",
+      when: () => true,
+      emit: () => ({
+        riskLevel: "HIGH",
+        decision: "MANUAL_REVIEW",
+        requiredActions: [
+          "Full PEP assessment required",
+          "Compliance officer review",
+        ],
+        flags: ["PEP_REVIEW_REQUIRED"],
+        reason: "PEP requires compliance review before approval",
+      }),
+      explain: () => "PEP fallback - requires manual review",
     },
   ],
 });
