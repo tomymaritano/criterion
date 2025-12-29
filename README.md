@@ -2,8 +2,6 @@
   <img src="criterion.jpg" alt="Criterion" width="100%" />
 </p>
 
-<h1 align="center">Criterion</h1>
-
 <p align="center">
   <strong>A universal, deterministic, and explainable decision engine for business-critical systems.</strong>
 </p>
