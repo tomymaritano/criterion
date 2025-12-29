@@ -52,6 +52,7 @@ export default defineConfig({
             { text: "Profile Registry", link: "/guide/profile-registry" },
             { text: "Explainability", link: "/guide/explainability" },
             { text: "Testing", link: "/guide/testing" },
+            { text: "Performance", link: "/guide/performance" },
           ],
         },
       ],
