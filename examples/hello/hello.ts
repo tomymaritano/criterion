@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { defineDecision, createRule, engine } from "../../src/index.js";
+import { defineDecision, createRule, engine } from "../../packages/core/src/index.js";
 
 // Define the decision
 const helloDecision = defineDecision({

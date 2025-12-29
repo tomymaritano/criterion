@@ -4,7 +4,7 @@
  * Run with: npx tsx benchmarks/run.ts
  */
 
-import { Engine, defineDecision, createRule } from "../src/index.js";
+import { Engine, defineDecision, createRule } from "../packages/core/src/index.js";
 import { z } from "zod";
 
 // Utility to measure execution time

@@ -1,0 +1,64 @@
+{
+  "name": "@criterionx/core",
+  "version": "0.2.0",
+  "description": "Universal decision engine for business-critical decisions",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "decision-engine",
+    "rules-engine",
+    "business-logic",
+    "deterministic",
+    "explainable",
+    "declarative",
+    "pure",
+    "audit",
+    "compliance"
+  ],
+  "author": {
+    "name": "Tomas Maritano",
+    "url": "https://github.com/tomymaritano"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/tomymaritano/criterionx/issues"
+  },
+  "homepage": "https://github.com/tomymaritano/criterionx#readme",
+  "peerDependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0",
+    "zod": "^3.22.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
