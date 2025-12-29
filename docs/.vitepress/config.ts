@@ -20,10 +20,11 @@ export default defineConfig({
       { text: "Examples", link: "/examples/currency-risk" },
       { text: "Architecture", link: "/architecture/manifesto" },
       {
-        text: "0.2.0",
+        text: "0.3.0",
         items: [
           { text: "Changelog", link: "/changelog" },
-          { text: "npm", link: "https://www.npmjs.com/package/@criterionx/core" },
+          { text: "@criterionx/core", link: "https://www.npmjs.com/package/@criterionx/core" },
+          { text: "@criterionx/server", link: "https://www.npmjs.com/package/@criterionx/server" },
         ],
       },
     ],
@@ -58,14 +59,26 @@ export default defineConfig({
             { text: "Performance", link: "/guide/performance" },
           ],
         },
+        {
+          text: "Server",
+          items: [
+            { text: "HTTP Server", link: "/guide/server" },
+          ],
+        },
       ],
       "/api/": [
         {
-          text: "API Reference",
+          text: "@criterionx/core",
           items: [
             { text: "Engine", link: "/api/engine" },
             { text: "Types", link: "/api/types" },
             { text: "Helpers", link: "/api/helpers" },
+          ],
+        },
+        {
+          text: "@criterionx/server",
+          items: [
+            { text: "Server API", link: "/api/server" },
           ],
         },
       ],
