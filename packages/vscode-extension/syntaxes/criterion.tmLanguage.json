@@ -1,0 +1,103 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Criterion",
+  "scopeName": "source.criterion",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#criterion-keywords" },
+    { "include": "#criterion-functions" },
+    { "include": "#zod-schema" },
+    { "include": "#rule-properties" },
+    { "include": "source.ts" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.criterion",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.criterion",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.criterion",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.criterion", "match": "\\\\." }
+          ]
+        },
+        {
+          "name": "string.quoted.single.criterion",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            { "name": "constant.character.escape.criterion", "match": "\\\\." }
+          ]
+        },
+        {
+          "name": "string.template.criterion",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            { "name": "constant.character.escape.criterion", "match": "\\\\." },
+            {
+              "name": "meta.template.expression.criterion",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "patterns": [{ "include": "source.ts" }]
+            }
+          ]
+        }
+      ]
+    },
+    "criterion-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.criterion",
+          "match": "\\b(defineDecision|createRule|createProfileRegistry)\\b"
+        },
+        {
+          "name": "storage.type.criterion",
+          "match": "\\b(Decision|Rule|Profile|Result|Engine)\\b"
+        },
+        {
+          "name": "constant.language.status.criterion",
+          "match": "\\b(OK|NO_MATCH|INVALID_INPUT|INVALID_OUTPUT)\\b"
+        }
+      ]
+    },
+    "criterion-functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.criterion",
+          "match": "\\b(engine\\.run|engine\\.explain)\\b"
+        }
+      ]
+    },
+    "zod-schema": {
+      "patterns": [
+        {
+          "name": "support.function.zod.criterion",
+          "match": "\\bz\\.(object|string|number|boolean|array|enum|union|literal|optional|nullable|transform|refine|default)\\b"
+        }
+      ]
+    },
+    "rule-properties": {
+      "patterns": [
+        {
+          "name": "variable.other.property.criterion",
+          "match": "\\b(id|version|inputSchema|outputSchema|profileSchema|rules|meta|when|emit|explain)\\s*:"
+        }
+      ]
+    }
+  }
+}

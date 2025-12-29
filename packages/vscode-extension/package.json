@@ -1,0 +1,97 @@
+{
+  "name": "criterionx-vscode",
+  "displayName": "Criterion",
+  "description": "VS Code extension for Criterion decision engine - syntax highlighting, snippets, and validation",
+  "version": "0.1.0",
+  "publisher": "criterionx",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/vscode-extension"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Linters"
+  ],
+  "keywords": [
+    "criterion",
+    "decision-engine",
+    "rules-engine",
+    "typescript"
+  ],
+  "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "criterion",
+        "aliases": ["Criterion", "criterion"],
+        "extensions": [".criterion.ts"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "criterion",
+        "scopeName": "source.criterion",
+        "path": "./syntaxes/criterion.tmLanguage.json"
+      },
+      {
+        "scopeName": "source.criterion.injection",
+        "path": "./syntaxes/criterion-injection.tmLanguage.json",
+        "injectTo": ["source.ts", "source.tsx"]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "typescript",
+        "path": "./snippets/criterion.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/criterion.json"
+      },
+      {
+        "language": "criterion",
+        "path": "./snippets/criterion.json"
+      }
+    ],
+    "configuration": {
+      "title": "Criterion",
+      "properties": {
+        "criterion.validate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable validation of Criterion decision files"
+        },
+        "criterion.trace": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable trace logging for debugging"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup src/extension.ts --format cjs --out-dir dist --clean --external vscode",
+    "watch": "tsup src/extension.ts --format cjs --out-dir dist --watch --external vscode",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  }
+}
