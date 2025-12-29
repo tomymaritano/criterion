@@ -66,11 +66,29 @@ export default defineConfig({
       ],
       "/examples/": [
         {
-          text: "Examples",
+          text: "Finance",
           items: [
             { text: "Currency Risk", link: "/examples/currency-risk" },
-            { text: "User Eligibility", link: "/examples/user-eligibility" },
             { text: "Loan Approval", link: "/examples/loan-approval" },
+            { text: "KYC Risk Assessment", link: "/examples/fintech-kyc" },
+          ],
+        },
+        {
+          text: "E-commerce",
+          items: [
+            { text: "Dynamic Pricing", link: "/examples/ecommerce-pricing" },
+          ],
+        },
+        {
+          text: "Healthcare",
+          items: [
+            { text: "Emergency Triage", link: "/examples/healthcare-triage" },
+          ],
+        },
+        {
+          text: "Other",
+          items: [
+            { text: "User Eligibility", link: "/examples/user-eligibility" },
           ],
         },
       ],
