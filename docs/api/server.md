@@ -30,6 +30,9 @@ interface ServerOptions {
 
   /** Enable CORS (default: true) */
   cors?: boolean;
+
+  /** Middleware hooks for evaluation lifecycle */
+  hooks?: Hooks;
 }
 ```
 
@@ -341,3 +344,65 @@ interface DecisionSchema {
   profileSchema: JsonSchema;
 }
 ```
+
+### Hooks
+
+```typescript
+interface Hooks {
+  /** Called before decision evaluation */
+  beforeEvaluate?: BeforeEvaluateHook;
+  /** Called after successful evaluation */
+  afterEvaluate?: AfterEvaluateHook;
+  /** Called when an error occurs */
+  onError?: OnErrorHook;
+}
+```
+
+### HookContext
+
+```typescript
+interface HookContext {
+  /** ID of the decision being evaluated */
+  decisionId: string;
+  /** Input data for the decision */
+  input: unknown;
+  /** Profile being used */
+  profile: unknown;
+  /** Unique request ID for tracing */
+  requestId: string;
+  /** Timestamp when evaluation started */
+  timestamp: Date;
+}
+```
+
+### BeforeEvaluateHook
+
+```typescript
+type BeforeEvaluateHook = (
+  ctx: HookContext
+) => Promise<Partial<HookContext> | void> | Partial<HookContext> | void;
+```
+
+Can modify context by returning a partial context object. Return `undefined` to keep original context. Throw to abort evaluation.
+
+### AfterEvaluateHook
+
+```typescript
+type AfterEvaluateHook = (
+  ctx: HookContext,
+  result: Result<unknown>
+) => Promise<void> | void;
+```
+
+Receives the evaluation result. Cannot modify the result. Use for logging, metrics, side effects.
+
+### OnErrorHook
+
+```typescript
+type OnErrorHook = (
+  ctx: HookContext,
+  error: Error
+) => Promise<void> | void;
+```
+
+Called when an error occurs during hook execution or evaluation.

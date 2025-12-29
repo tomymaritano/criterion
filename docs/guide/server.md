@@ -170,6 +170,62 @@ Response:
 }
 ```
 
+## Middleware Hooks
+
+The server supports hooks for intercepting decision evaluations. Use hooks for logging, metrics, input transformation, or error handling.
+
+```typescript
+const server = createServer({
+  decisions: [riskDecision],
+  profiles: { "transaction-risk": { threshold: 10000 } },
+  hooks: {
+    // Called before each evaluation
+    beforeEvaluate: async (ctx) => {
+      console.log(`[${ctx.requestId}] Evaluating ${ctx.decisionId}`);
+      console.log(`  Input:`, ctx.input);
+      console.log(`  Profile:`, ctx.profile);
+
+      // Optionally modify input or profile
+      // return { input: transformedInput };
+    },
+
+    // Called after successful evaluation
+    afterEvaluate: async (ctx, result) => {
+      console.log(`[${ctx.requestId}] Result: ${result.status}`);
+      if (result.status === "OK") {
+        console.log(`  Matched rule: ${result.meta.matchedRule}`);
+      }
+    },
+
+    // Called when an error occurs
+    onError: async (ctx, error) => {
+      console.error(`[${ctx.requestId}] Error in ${ctx.decisionId}:`, error.message);
+    },
+  },
+});
+```
+
+### Hook Context
+
+Each hook receives a `HookContext` with:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `decisionId` | `string` | ID of the decision being evaluated |
+| `input` | `unknown` | Input data for the decision |
+| `profile` | `unknown` | Profile being used |
+| `requestId` | `string` | Unique request ID (e.g., `req_abc123`) |
+| `timestamp` | `Date` | When the evaluation started |
+
+### Use Cases
+
+- **Logging**: Track all evaluations for debugging
+- **Metrics**: Collect timing data for monitoring
+- **Input transformation**: Normalize or enrich input before evaluation
+- **Caching**: Check cache before evaluation (in `beforeEvaluate`)
+- **Rate limiting**: Reject requests before evaluation
+- **Error tracking**: Send errors to monitoring services
+
 ## Design Principles
 
 The server follows strict architectural invariants:

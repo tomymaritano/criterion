@@ -2,8 +2,21 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
 import { Engine, type Decision } from "@criterionx/core";
-import type { ServerOptions, EvaluateRequest, DecisionInfo } from "./types.js";
+import type {
+  ServerOptions,
+  EvaluateRequest,
+  DecisionInfo,
+  Hooks,
+  HookContext,
+} from "./types.js";
 import { extractDecisionSchema, generateEndpointSchema } from "./schema.js";
+
+/**
+ * Generate a unique request ID
+ */
+function generateRequestId(): string {
+  return `req_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
+}
 
 /**
  * Criterion Server
@@ -16,12 +29,14 @@ export class CriterionServer {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private decisions: Map<string, Decision<any, any, any>>;
   private profiles: Map<string, unknown>;
+  private hooks: Hooks;
 
   constructor(options: ServerOptions) {
     this.app = new Hono();
     this.engine = new Engine();
     this.decisions = new Map();
     this.profiles = new Map();
+    this.hooks = options.hooks ?? {};
 
     // Register decisions
     for (const decision of options.decisions) {
@@ -128,12 +143,49 @@ export class CriterionServer {
         }
       }
 
-      // Run decision
-      const result = this.engine.run(decision, body.input, { profile });
+      // Build hook context
+      let ctx: HookContext = {
+        decisionId: id,
+        input: body.input,
+        profile,
+        requestId: generateRequestId(),
+        timestamp: new Date(),
+      };
 
-      // Return result with appropriate status code
-      const statusCode = result.status === "OK" ? 200 : 400;
-      return c.json(result, statusCode);
+      try {
+        // Call beforeEvaluate hook
+        if (this.hooks.beforeEvaluate) {
+          const modified = await this.hooks.beforeEvaluate(ctx);
+          if (modified) {
+            ctx = { ...ctx, ...modified };
+          }
+        }
+
+        // Run decision with potentially modified context
+        const result = this.engine.run(decision, ctx.input, {
+          profile: ctx.profile,
+        });
+
+        // Call afterEvaluate hook
+        if (this.hooks.afterEvaluate) {
+          await this.hooks.afterEvaluate(ctx, result);
+        }
+
+        // Return result with appropriate status code
+        const statusCode = result.status === "OK" ? 200 : 400;
+        return c.json(result, statusCode);
+      } catch (error) {
+        // Call onError hook
+        if (this.hooks.onError) {
+          await this.hooks.onError(
+            ctx,
+            error instanceof Error ? error : new Error(String(error))
+          );
+        }
+
+        // Re-throw to let Hono handle the error
+        throw error;
+      }
     });
 
     // Interactive docs UI
