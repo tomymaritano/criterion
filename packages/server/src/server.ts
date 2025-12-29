@@ -13,7 +13,8 @@ import { extractDecisionSchema, generateEndpointSchema } from "./schema.js";
 export class CriterionServer {
   private app: Hono;
   private engine: Engine;
-  private decisions: Map<string, Decision<unknown, unknown, unknown>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private decisions: Map<string, Decision<any, any, any>>;
   private profiles: Map<string, unknown>;
 
   constructor(options: ServerOptions) {

@@ -5,7 +5,8 @@ import type { Decision } from "@criterionx/core";
  */
 export interface ServerOptions {
   /** Decisions to expose via HTTP */
-  decisions: Decision<unknown, unknown, unknown>[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  decisions: Decision<any, any, any>[];
   /** Default profiles for decisions (keyed by decision ID) */
   profiles?: Record<string, unknown>;
   /** Enable CORS (default: true) */
