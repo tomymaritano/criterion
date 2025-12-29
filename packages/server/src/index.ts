@@ -55,10 +55,20 @@ export type {
   AfterEvaluateHook,
   OnErrorHook,
   Hooks,
+  // Metrics types
+  MetricsOptions,
 } from "./types.js";
 
 // Schema utilities
 export { toJsonSchema, extractDecisionSchema, generateEndpointSchema } from "./schema.js";
+
+// Metrics
+export {
+  MetricsCollector,
+  METRIC_EVALUATIONS_TOTAL,
+  METRIC_EVALUATION_DURATION_SECONDS,
+  METRIC_RULE_MATCHES_TOTAL,
+} from "./metrics.js";
 
 // Server
 export { CriterionServer, createServer } from "./server.js";

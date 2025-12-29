@@ -226,6 +226,76 @@ Each hook receives a `HookContext` with:
 - **Rate limiting**: Reject requests before evaluation
 - **Error tracking**: Send errors to monitoring services
 
+## Metrics & Observability
+
+The server includes built-in Prometheus metrics for production monitoring.
+
+### Enabling Metrics
+
+```typescript
+const server = createServer({
+  decisions: [riskDecision],
+  profiles: { "transaction-risk": { threshold: 10000 } },
+  metrics: {
+    enabled: true,
+    endpoint: "/metrics", // Default
+  },
+});
+```
+
+### Available Metrics
+
+| Metric | Type | Labels | Description |
+|--------|------|--------|-------------|
+| `criterion_evaluations_total` | Counter | `decision_id`, `status` | Total number of evaluations |
+| `criterion_evaluation_duration_seconds` | Histogram | `decision_id` | Evaluation latency |
+| `criterion_rule_matches_total` | Counter | `decision_id`, `rule_id` | Rule match distribution |
+
+### Prometheus Integration
+
+```bash
+# Scrape metrics
+curl http://localhost:3000/metrics
+```
+
+Example output:
+```text
+# HELP criterion_evaluations_total Counter metric
+# TYPE criterion_evaluations_total counter
+criterion_evaluations_total{decision_id="transaction-risk",status="OK"} 42
+
+# HELP criterion_evaluation_duration_seconds Histogram metric
+# TYPE criterion_evaluation_duration_seconds histogram
+criterion_evaluation_duration_seconds_bucket{decision_id="transaction-risk",le="0.01"} 38
+criterion_evaluation_duration_seconds_bucket{decision_id="transaction-risk",le="0.1"} 42
+criterion_evaluation_duration_seconds_sum{decision_id="transaction-risk"} 0.156
+criterion_evaluation_duration_seconds_count{decision_id="transaction-risk"} 42
+```
+
+### Grafana Dashboard
+
+With these metrics you can create dashboards for:
+- Request rate per decision
+- Latency percentiles (p50, p95, p99)
+- Error rates by decision
+- Rule match distribution
+
+### Programmatic Access
+
+```typescript
+const server = createServer({
+  decisions: [riskDecision],
+  profiles: { ... },
+  metrics: { enabled: true },
+});
+
+// Access metrics collector directly
+const collector = server.metrics;
+if (collector) {
+  console.log(collector.toPrometheus());
+}
+```
+
 ## Design Principles
 
 The server follows strict architectural invariants:

@@ -8,8 +8,15 @@ import type {
   DecisionInfo,
   Hooks,
   HookContext,
+  MetricsOptions,
 } from "./types.js";
 import { extractDecisionSchema, generateEndpointSchema } from "./schema.js";
+import {
+  MetricsCollector,
+  METRIC_EVALUATIONS_TOTAL,
+  METRIC_EVALUATION_DURATION_SECONDS,
+  METRIC_RULE_MATCHES_TOTAL,
+} from "./metrics.js";
 
 /**
  * Generate a unique request ID
@@ -30,6 +37,8 @@ export class CriterionServer {
   private decisions: Map<string, Decision<any, any, any>>;
   private profiles: Map<string, unknown>;
   private hooks: Hooks;
+  private metricsCollector: MetricsCollector | null = null;
+  private metricsOptions: MetricsOptions;
 
   constructor(options: ServerOptions) {
     this.app = new Hono();
@@ -37,6 +46,12 @@ export class CriterionServer {
     this.decisions = new Map();
     this.profiles = new Map();
     this.hooks = options.hooks ?? {};
+    this.metricsOptions = options.metrics ?? {};
+
+    // Setup metrics if enabled
+    if (this.metricsOptions.enabled) {
+      this.metricsCollector = new MetricsCollector(this.metricsOptions);
+    }
 
     // Register decisions
     for (const decision of options.decisions) {
@@ -66,8 +81,18 @@ export class CriterionServer {
         name: "Criterion Server",
         version: "0.1.0",
         decisions: this.decisions.size,
+        metrics: this.metricsCollector !== null,
       });
     });
+
+    // Metrics endpoint (Prometheus format)
+    if (this.metricsCollector) {
+      const endpoint = this.metricsOptions.endpoint ?? "/metrics";
+      this.app.get(endpoint, (c) => {
+        c.header("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
+        return c.text(this.metricsCollector!.toPrometheus());
+      });
+    }
 
     // List all decisions
     this.app.get("/decisions", (c) => {
@@ -152,6 +177,9 @@ export class CriterionServer {
         timestamp: new Date(),
       };
 
+      // Track start time for metrics
+      const startTime = performance.now();
+
       try {
         // Call beforeEvaluate hook
         if (this.hooks.beforeEvaluate) {
@@ -166,6 +194,32 @@ export class CriterionServer {
           profile: ctx.profile,
         });
 
+        // Record metrics
+        if (this.metricsCollector) {
+          const durationSeconds = (performance.now() - startTime) / 1000;
+
+          // Evaluation count
+          this.metricsCollector.increment(METRIC_EVALUATIONS_TOTAL, {
+            decision_id: id,
+            status: result.status,
+          });
+
+          // Evaluation duration
+          this.metricsCollector.observe(
+            METRIC_EVALUATION_DURATION_SECONDS,
+            { decision_id: id },
+            durationSeconds
+          );
+
+          // Rule matches
+          if (result.meta.matchedRule) {
+            this.metricsCollector.increment(METRIC_RULE_MATCHES_TOTAL, {
+              decision_id: id,
+              rule_id: result.meta.matchedRule,
+            });
+          }
+        }
+
         // Call afterEvaluate hook
         if (this.hooks.afterEvaluate) {
           await this.hooks.afterEvaluate(ctx, result);
@@ -175,6 +229,14 @@ export class CriterionServer {
         const statusCode = result.status === "OK" ? 200 : 400;
         return c.json(result, statusCode);
       } catch (error) {
+        // Record error metric
+        if (this.metricsCollector) {
+          this.metricsCollector.increment(METRIC_EVALUATIONS_TOTAL, {
+            decision_id: id,
+            status: "ERROR",
+          });
+        }
+
         // Call onError hook
         if (this.hooks.onError) {
           await this.hooks.onError(
@@ -414,6 +476,13 @@ export class CriterionServer {
   }
 
   /**
+   * Get the metrics collector (if enabled)
+   */
+  get metrics(): MetricsCollector | null {
+    return this.metricsCollector;
+  }
+
+  /**
    * Start the server
    */
   listen(port: number = 3000): void {
@@ -421,6 +490,10 @@ export class CriterionServer {
     console.log(`  Decisions: ${this.decisions.size}`);
     console.log(`  Docs: http://localhost:${port}/docs`);
     console.log(`  API: http://localhost:${port}/decisions`);
+    if (this.metricsCollector) {
+      const endpoint = this.metricsOptions.endpoint ?? "/metrics";
+      console.log(`  Metrics: http://localhost:${port}${endpoint}`);
+    }
 
     serve({
       fetch: this.app.fetch,
