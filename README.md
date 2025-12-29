@@ -14,6 +14,18 @@
 
 ---
 
+## What is Criterion?
+
+Criterion helps you encode business decisions as **pure, testable functions** with built-in validation and explainability.
+
+Instead of scattering `if/else` statements across your codebase, you define decisions declaratively:
+
+- **"Should this transaction be flagged as high-risk?"**
+- **"Is this user eligible for a premium tier?"**
+- **"What discount applies to this order?"**
+
+Every decision returns not just a result, but a complete explanation of *why* that result was reached — perfect for audits, debugging, and compliance.
+
 ## Installation
 
 ```bash
