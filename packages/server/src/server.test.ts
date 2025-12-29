@@ -391,6 +391,168 @@ describe("middleware hooks", () => {
   });
 });
 
+describe("openapi", () => {
+  it("should expose /openapi.json endpoint when enabled", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      openapi: { enabled: true },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/openapi.json")
+    );
+
+    expect(response.status).toBe(200);
+    const spec = await response.json();
+    expect(spec.openapi).toBe("3.0.0");
+    expect(spec.paths).toBeDefined();
+    expect(spec.paths["/decisions/test-decision"]).toBeDefined();
+  });
+
+  it("should use custom OpenAPI endpoint", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      openapi: { enabled: true, endpoint: "/api/spec.json" },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/api/spec.json")
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should not expose /openapi.json when disabled", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      // openapi not enabled
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/openapi.json")
+    );
+
+    expect(response.status).toBe(404);
+  });
+
+  it("should expose Swagger UI by default when OpenAPI enabled", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      openapi: { enabled: true },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/swagger")
+    );
+
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain("swagger-ui");
+    expect(html).toContain("/openapi.json");
+  });
+
+  it("should use custom Swagger UI endpoint", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      openapi: { enabled: true, swaggerEndpoint: "/api-docs" },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/api-docs")
+    );
+
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain("swagger-ui");
+  });
+
+  it("should disable Swagger UI when swaggerUI is false", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      openapi: { enabled: true, swaggerUI: false },
+    });
+
+    // OpenAPI spec should still be available
+    const specResponse = await server.handler.request(
+      new Request("http://localhost/openapi.json")
+    );
+    expect(specResponse.status).toBe(200);
+
+    // But Swagger UI should not be available
+    const swaggerResponse = await server.handler.request(
+      new Request("http://localhost/swagger")
+    );
+    expect(swaggerResponse.status).toBe(404);
+  });
+
+  it("should include custom info in OpenAPI spec", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      openapi: {
+        enabled: true,
+        info: {
+          title: "My Custom API",
+          version: "2.0.0",
+          description: "Custom description",
+        },
+      },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/openapi.json")
+    );
+
+    const spec = await response.json();
+    expect(spec.info.title).toBe("My Custom API");
+    expect(spec.info.version).toBe("2.0.0");
+    expect(spec.info.description).toBe("Custom description");
+  });
+
+  it("should generate schemas for all decisions", async () => {
+    const anotherDecision = defineDecision({
+      id: "another-decision",
+      version: "1.0.0",
+      inputSchema: z.object({ name: z.string() }),
+      outputSchema: z.object({ greeting: z.string() }),
+      profileSchema: z.object({}),
+      rules: [
+        {
+          id: "default",
+          when: () => true,
+          emit: (input) => ({ greeting: `Hello ${input.name}` }),
+          explain: () => "Default greeting",
+        },
+      ],
+    });
+
+    const server = createServer({
+      decisions: [testDecision, anotherDecision],
+      profiles: {
+        "test-decision": { threshold: 10 },
+        "another-decision": {},
+      },
+      openapi: { enabled: true },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/openapi.json")
+    );
+
+    const spec = await response.json();
+    expect(spec.paths["/decisions/test-decision"]).toBeDefined();
+    expect(spec.paths["/decisions/another-decision"]).toBeDefined();
+    expect(spec.components.schemas["TestDecisionInput"]).toBeDefined();
+    expect(spec.components.schemas["AnotherDecisionInput"]).toBeDefined();
+  });
+});
+
 describe("metrics", () => {
   it("should expose /metrics endpoint when enabled", async () => {
     const server = createServer({

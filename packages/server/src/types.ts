@@ -74,6 +74,45 @@ export interface MetricsOptions {
 }
 
 /**
+ * OpenAPI info object
+ */
+export interface OpenAPIInfo {
+  /** API title */
+  title: string;
+  /** API version */
+  version: string;
+  /** API description */
+  description?: string;
+  /** Contact information */
+  contact?: {
+    name?: string;
+    url?: string;
+    email?: string;
+  };
+  /** License information */
+  license?: {
+    name: string;
+    url?: string;
+  };
+}
+
+/**
+ * OpenAPI configuration options
+ */
+export interface OpenAPIOptions {
+  /** Enable OpenAPI spec generation (default: false) */
+  enabled?: boolean;
+  /** Endpoint path for OpenAPI spec (default: /openapi.json) */
+  endpoint?: string;
+  /** API info for OpenAPI spec */
+  info?: Partial<OpenAPIInfo>;
+  /** Enable Swagger UI (default: true when openapi is enabled) */
+  swaggerUI?: boolean;
+  /** Swagger UI endpoint (default: /swagger) */
+  swaggerEndpoint?: string;
+}
+
+/**
  * Server configuration options
  */
 export interface ServerOptions {
@@ -88,6 +127,8 @@ export interface ServerOptions {
   hooks?: Hooks;
   /** Prometheus metrics configuration */
   metrics?: MetricsOptions;
+  /** OpenAPI spec generation configuration */
+  openapi?: OpenAPIOptions;
 }
 
 /**

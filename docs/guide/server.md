@@ -296,6 +296,76 @@ if (collector) {
 }
 ```
 
+## OpenAPI Specification
+
+The server can generate an OpenAPI 3.0 specification with Swagger UI.
+
+### Enabling OpenAPI
+
+```typescript
+const server = createServer({
+  decisions: [riskDecision],
+  profiles: { "transaction-risk": { threshold: 10000 } },
+  openapi: {
+    enabled: true,
+    endpoint: "/openapi.json",     // Default
+    swaggerEndpoint: "/swagger",   // Default
+    info: {
+      title: "My Decision API",
+      version: "1.0.0",
+      description: "Risk assessment API",
+      contact: {
+        name: "API Support",
+        email: "support@example.com",
+      },
+    },
+  },
+});
+```
+
+Visit:
+- `http://localhost:3000/openapi.json` - OpenAPI 3.0 spec
+- `http://localhost:3000/swagger` - Swagger UI
+
+### Generated Endpoints
+
+The OpenAPI spec includes:
+- POST `/decisions/:id` - Evaluate a decision
+- GET `/decisions/:id/schema` - Get decision schema
+- GET `/decisions` - List all decisions
+- GET `/` - Health check
+
+### Generated Schemas
+
+For each decision, schemas are generated:
+- `{DecisionId}Input` - Input schema
+- `{DecisionId}Output` - Output schema
+- `{DecisionId}Profile` - Profile schema
+- `{DecisionId}Request` - Request body schema
+
+Plus common schemas:
+- `EvaluationResult` - Response structure
+- `ResultMeta` - Metadata structure
+- `ErrorResponse` - Error structure
+
+### Swagger UI
+
+Swagger UI is enabled by default when OpenAPI is enabled. To disable:
+
+```typescript
+openapi: {
+  enabled: true,
+  swaggerUI: false, // Disable Swagger UI
+}
+```
+
+### Use Cases
+
+- **Client generation**: Use OpenAPI spec with tools like `openapi-generator`
+- **API documentation**: Interactive docs for frontend teams
+- **Contract testing**: Validate API responses against schema
+- **API gateways**: Import spec into Kong, AWS API Gateway, etc.
+
 ## Design Principles
 
 The server follows strict architectural invariants:
@@ -303,7 +373,7 @@ The server follows strict architectural invariants:
 1. **Server does NOT add decision logic** — It only calls `engine.run()`
 2. **Decisions are explicitly registered** — No auto-discovery or folder scanning
 3. **UI cannot invent defaults** — Shows exactly what's required by the schema
-4. **JSON Schema is primary** — OpenAPI will be derived from it (future)
+4. **JSON Schema is primary** — OpenAPI is derived from it
 
 ## Using with Hono
 

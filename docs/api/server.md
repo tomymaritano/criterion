@@ -36,6 +36,9 @@ interface ServerOptions {
 
   /** Prometheus metrics configuration */
   metrics?: MetricsOptions;
+
+  /** OpenAPI spec generation configuration */
+  openapi?: OpenAPIOptions;
 }
 ```
 
@@ -483,4 +486,70 @@ import {
   METRIC_EVALUATION_DURATION_SECONDS, // "criterion_evaluation_duration_seconds"
   METRIC_RULE_MATCHES_TOTAL,       // "criterion_rule_matches_total"
 } from "@criterionx/server";
+```
+
+### OpenAPIOptions
+
+```typescript
+interface OpenAPIOptions {
+  /** Enable OpenAPI spec generation (default: false) */
+  enabled?: boolean;
+  /** Endpoint path for OpenAPI spec (default: /openapi.json) */
+  endpoint?: string;
+  /** API info for OpenAPI spec */
+  info?: Partial<OpenAPIInfo>;
+  /** Enable Swagger UI (default: true when openapi is enabled) */
+  swaggerUI?: boolean;
+  /** Swagger UI endpoint (default: /swagger) */
+  swaggerEndpoint?: string;
+}
+```
+
+### OpenAPIInfo
+
+```typescript
+interface OpenAPIInfo {
+  /** API title */
+  title: string;
+  /** API version */
+  version: string;
+  /** API description */
+  description?: string;
+  /** Contact information */
+  contact?: {
+    name?: string;
+    url?: string;
+    email?: string;
+  };
+  /** License information */
+  license?: {
+    name: string;
+    url?: string;
+  };
+}
+```
+
+### generateOpenAPISpec
+
+Generate an OpenAPI 3.0 specification from decisions.
+
+```typescript
+import { generateOpenAPISpec } from "@criterionx/server";
+
+const spec = generateOpenAPISpec(decisions, {
+  title: "My API",
+  version: "1.0.0",
+});
+
+console.log(JSON.stringify(spec, null, 2));
+```
+
+### generateSwaggerUIHtml
+
+Generate HTML for Swagger UI.
+
+```typescript
+import { generateSwaggerUIHtml } from "@criterionx/server";
+
+const html = generateSwaggerUIHtml("/openapi.json");
 ```

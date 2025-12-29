@@ -57,6 +57,9 @@ export type {
   Hooks,
   // Metrics types
   MetricsOptions,
+  // OpenAPI types
+  OpenAPIOptions,
+  OpenAPIInfo,
 } from "./types.js";
 
 // Schema utilities
@@ -69,6 +72,10 @@ export {
   METRIC_EVALUATION_DURATION_SECONDS,
   METRIC_RULE_MATCHES_TOTAL,
 } from "./metrics.js";
+
+// OpenAPI
+export { generateOpenAPISpec, generateSwaggerUIHtml } from "./openapi.js";
+export type { OpenAPISpec } from "./openapi.js";
 
 // Server
 export { CriterionServer, createServer } from "./server.js";
