@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Criterion Injection",
+  "scopeName": "source.criterion.injection",
+  "injectionSelector": "L:source.ts, L:source.tsx",
+  "patterns": [
+    {
+      "name": "keyword.control.criterion.injection",
+      "match": "\\b(defineDecision|createRule|createProfileRegistry)\\b"
+    },
+    {
+      "name": "constant.language.status.criterion.injection",
+      "match": "\\b(OK|NO_MATCH|INVALID_INPUT|INVALID_OUTPUT)\\b"
+    },
+    {
+      "name": "support.type.criterion.injection",
+      "match": "\\b(Decision|Rule|Profile|Result|Engine|RuleTrace|ResultMeta)\\b"
+    }
+  ]
+}

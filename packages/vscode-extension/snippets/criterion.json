@@ -1,0 +1,213 @@
+{
+  "Define Decision": {
+    "prefix": ["decision", "defineDecision", "crit-decision"],
+    "description": "Create a new Criterion decision",
+    "body": [
+      "import { defineDecision } from \"@criterionx/core\";",
+      "import { z } from \"zod\";",
+      "",
+      "export const ${1:myDecision} = defineDecision({",
+      "  id: \"${2:decision-id}\",",
+      "  version: \"${3:1.0.0}\",",
+      "",
+      "  inputSchema: z.object({",
+      "    ${4:field}: z.${5:string}(),",
+      "  }),",
+      "",
+      "  outputSchema: z.object({",
+      "    ${6:result}: z.${7:string}(),",
+      "  }),",
+      "",
+      "  profileSchema: z.object({",
+      "    ${8:threshold}: z.${9:number}(),",
+      "  }),",
+      "",
+      "  rules: [",
+      "    {",
+      "      id: \"${10:default}\",",
+      "      when: (ctx, profile) => ${11:true},",
+      "      emit: (ctx, profile) => ({ ${6:result}: \"${12:value}\" }),",
+      "      explain: (ctx, profile) => \"${13:Explanation}\",",
+      "    },",
+      "  ],",
+      "});",
+      ""
+    ]
+  },
+  "Create Rule": {
+    "prefix": ["rule", "crit-rule"],
+    "description": "Create a new rule for a Criterion decision",
+    "body": [
+      "{",
+      "  id: \"${1:rule-id}\",",
+      "  when: (ctx, profile) => ${2:ctx.value > profile.threshold},",
+      "  emit: (ctx, profile) => ({",
+      "    ${3:result}: \"${4:value}\",",
+      "  }),",
+      "  explain: (ctx, profile) => `${5:Rule matched because \\${ctx.value\\}}`",
+      "},"
+    ]
+  },
+  "Create Profile": {
+    "prefix": ["profile", "crit-profile"],
+    "description": "Create a profile for a Criterion decision",
+    "body": [
+      "const ${1:defaultProfile} = {",
+      "  ${2:threshold}: ${3:1000},",
+      "  ${4:enabled}: ${5:true},",
+      "} satisfies z.infer<typeof ${6:myDecision}.profileSchema>;"
+    ]
+  },
+  "Run Decision": {
+    "prefix": ["run", "crit-run", "engine.run"],
+    "description": "Run a Criterion decision",
+    "body": [
+      "import { Engine } from \"@criterionx/core\";",
+      "",
+      "const engine = new Engine();",
+      "",
+      "const result = engine.run(",
+      "  ${1:myDecision},",
+      "  { ${2:input}: ${3:value} },",
+      "  { profile: ${4:defaultProfile} }",
+      ");",
+      "",
+      "if (result.status === \"OK\") {",
+      "  console.log(result.data);",
+      "}"
+    ]
+  },
+  "Input Schema": {
+    "prefix": ["inputSchema", "crit-input"],
+    "description": "Define an input schema with Zod",
+    "body": [
+      "inputSchema: z.object({",
+      "  ${1:field}: z.${2:string}(),",
+      "  ${3:amount}: z.${4:number}(),",
+      "}),"
+    ]
+  },
+  "Output Schema": {
+    "prefix": ["outputSchema", "crit-output"],
+    "description": "Define an output schema with Zod",
+    "body": [
+      "outputSchema: z.object({",
+      "  ${1:result}: z.${2:string}(),",
+      "  ${3:score}: z.${4:number}(),",
+      "}),"
+    ]
+  },
+  "Profile Schema": {
+    "prefix": ["profileSchema", "crit-profile-schema"],
+    "description": "Define a profile schema with Zod",
+    "body": [
+      "profileSchema: z.object({",
+      "  ${1:threshold}: z.number(),",
+      "  ${2:enabled}: z.boolean().default(true),",
+      "}),"
+    ]
+  },
+  "When Condition": {
+    "prefix": ["when", "crit-when"],
+    "description": "Create a when condition for a rule",
+    "body": [
+      "when: (ctx, profile) => ${1:ctx.amount > profile.threshold},"
+    ]
+  },
+  "Emit Output": {
+    "prefix": ["emit", "crit-emit"],
+    "description": "Create an emit function for a rule",
+    "body": [
+      "emit: (ctx, profile) => ({",
+      "  ${1:result}: \"${2:value}\",",
+      "  ${3:score}: ${4:ctx.amount / profile.threshold},",
+      "}),"
+    ]
+  },
+  "Explain Function": {
+    "prefix": ["explain", "crit-explain"],
+    "description": "Create an explain function for a rule",
+    "body": [
+      "explain: (ctx, profile) => `${1:Matched because \\${ctx.field\\} is \\${ctx.value\\}}`,"
+    ]
+  },
+  "Decision with Meta": {
+    "prefix": ["decision-meta", "crit-decision-full"],
+    "description": "Create a decision with metadata",
+    "body": [
+      "import { defineDecision } from \"@criterionx/core\";",
+      "import { z } from \"zod\";",
+      "",
+      "export const ${1:myDecision} = defineDecision({",
+      "  id: \"${2:decision-id}\",",
+      "  version: \"${3:1.0.0}\",",
+      "",
+      "  meta: {",
+      "    owner: \"${4:team-name}\",",
+      "    tags: [\"${5:risk}\", \"${6:finance}\"],",
+      "    tier: \"${7:critical}\",",
+      "    description: \"${8:Decision description}\",",
+      "  },",
+      "",
+      "  inputSchema: z.object({",
+      "    ${9:field}: z.string(),",
+      "  }),",
+      "",
+      "  outputSchema: z.object({",
+      "    ${10:result}: z.string(),",
+      "  }),",
+      "",
+      "  profileSchema: z.object({",
+      "    ${11:threshold}: z.number(),",
+      "  }),",
+      "",
+      "  rules: [",
+      "    $0",
+      "  ],",
+      "});",
+      ""
+    ]
+  },
+  "Test Decision": {
+    "prefix": ["test-decision", "crit-test"],
+    "description": "Create a test for a Criterion decision",
+    "body": [
+      "import { testDecision } from \"@criterionx/testing\";",
+      "import { ${1:myDecision} } from \"./${2:decisions}\";",
+      "",
+      "const result = testDecision(${1:myDecision}, {",
+      "  profile: ${3:defaultProfile},",
+      "  cases: [",
+      "    {",
+      "      name: \"${4:test case}\",",
+      "      input: { ${5:field}: ${6:value} },",
+      "      expected: { status: \"OK\", ruleId: \"${7:rule-id}\" },",
+      "    },",
+      "  ],",
+      "  expect: {",
+      "    noUnreachableRules: true,",
+      "  },",
+      "});",
+      "",
+      "console.log(result.passed ? \"PASSED\" : \"FAILED\");"
+    ]
+  },
+  "Server Setup": {
+    "prefix": ["server", "crit-server"],
+    "description": "Create a Criterion server",
+    "body": [
+      "import { createServer } from \"@criterionx/server\";",
+      "import { ${1:myDecision} } from \"./${2:decisions}\";",
+      "",
+      "const server = createServer({",
+      "  decisions: [${1:myDecision}],",
+      "  profiles: {",
+      "    \"${3:decision-id}\": ${4:defaultProfile},",
+      "  },",
+      "});",
+      "",
+      "server.listen(${5:3000});",
+      "console.log(\"Server running on http://localhost:${5:3000}\");"
+    ]
+  }
+}
