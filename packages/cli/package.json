@@ -1,0 +1,58 @@
+{
+  "name": "@criterionx/cli",
+  "version": "0.1.0",
+  "description": "CLI for scaffolding Criterion decisions",
+  "type": "module",
+  "bin": {
+    "criterion": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "templates",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "criterion",
+    "cli",
+    "decision-engine",
+    "scaffolding",
+    "generator"
+  ],
+  "author": {
+    "name": "Tomas Maritano",
+    "url": "https://github.com/tomymaritano"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/tomymaritano/criterionx/issues"
+  },
+  "homepage": "https://github.com/tomymaritano/criterionx#readme",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "picocolors": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
