@@ -1,5 +1,5 @@
 {
-  "name": "criterion",
+  "name": "@criterion/core",
   "version": "0.1.0",
   "description": "Universal decision engine for business-critical decisions",
   "type": "module",
@@ -11,22 +11,45 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "decision-engine",
     "rules-engine",
     "business-logic",
     "deterministic",
-    "explainable"
+    "explainable",
+    "declarative",
+    "pure",
+    "audit",
+    "compliance"
   ],
-  "author": "tomymaritano",
+  "author": {
+    "name": "Tomas Maritano",
+    "url": "https://github.com/tomymaritano"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tomymaritano/criterion/issues"
+  },
+  "homepage": "https://github.com/tomymaritano/criterion#readme",
   "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
     "vitest": "^2.0.0",
