@@ -1,0 +1,57 @@
+{
+  "name": "@criterionx/testing",
+  "version": "0.1.0",
+  "description": "Testing utilities for Criterion decisions",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "criterion",
+    "testing",
+    "decision-engine",
+    "fuzzing",
+    "property-based-testing"
+  ],
+  "author": {
+    "name": "Tomas Maritano",
+    "url": "https://github.com/tomymaritano"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/testing"
+  },
+  "bugs": {
+    "url": "https://github.com/tomymaritano/criterionx/issues"
+  },
+  "homepage": "https://github.com/tomymaritano/criterionx#readme",
+  "dependencies": {
+    "@criterionx/core": "workspace:*",
+    "fast-check": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0",
+    "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
