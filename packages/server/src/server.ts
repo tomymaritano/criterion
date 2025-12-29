@@ -9,6 +9,7 @@ import type {
   Hooks,
   HookContext,
   MetricsOptions,
+  OpenAPIOptions,
 } from "./types.js";
 import { extractDecisionSchema, generateEndpointSchema } from "./schema.js";
 import {
@@ -17,6 +18,11 @@ import {
   METRIC_EVALUATION_DURATION_SECONDS,
   METRIC_RULE_MATCHES_TOTAL,
 } from "./metrics.js";
+import {
+  generateOpenAPISpec,
+  generateSwaggerUIHtml,
+  type OpenAPISpec,
+} from "./openapi.js";
 
 /**
  * Generate a unique request ID
@@ -39,6 +45,8 @@ export class CriterionServer {
   private hooks: Hooks;
   private metricsCollector: MetricsCollector | null = null;
   private metricsOptions: MetricsOptions;
+  private openApiOptions: OpenAPIOptions;
+  private openApiSpec: OpenAPISpec | null = null;
 
   constructor(options: ServerOptions) {
     this.app = new Hono();
@@ -47,6 +55,7 @@ export class CriterionServer {
     this.profiles = new Map();
     this.hooks = options.hooks ?? {};
     this.metricsOptions = options.metrics ?? {};
+    this.openApiOptions = options.openapi ?? {};
 
     // Setup metrics if enabled
     if (this.metricsOptions.enabled) {
@@ -63,6 +72,14 @@ export class CriterionServer {
       for (const [id, profile] of Object.entries(options.profiles)) {
         this.profiles.set(id, profile);
       }
+    }
+
+    // Generate OpenAPI spec if enabled
+    if (this.openApiOptions.enabled) {
+      this.openApiSpec = generateOpenAPISpec(
+        options.decisions,
+        this.openApiOptions.info
+      );
     }
 
     // Setup middleware
@@ -92,6 +109,23 @@ export class CriterionServer {
         c.header("Content-Type", "text/plain; version=0.0.4; charset=utf-8");
         return c.text(this.metricsCollector!.toPrometheus());
       });
+    }
+
+    // OpenAPI endpoints
+    if (this.openApiSpec) {
+      const specEndpoint = this.openApiOptions.endpoint ?? "/openapi.json";
+      this.app.get(specEndpoint, (c) => {
+        return c.json(this.openApiSpec);
+      });
+
+      // Swagger UI (enabled by default when OpenAPI is enabled)
+      if (this.openApiOptions.swaggerUI !== false) {
+        const swaggerEndpoint = this.openApiOptions.swaggerEndpoint ?? "/swagger";
+        this.app.get(swaggerEndpoint, (c) => {
+          const html = generateSwaggerUIHtml(specEndpoint);
+          return c.html(html);
+        });
+      }
     }
 
     // List all decisions
@@ -493,6 +527,14 @@ export class CriterionServer {
     if (this.metricsCollector) {
       const endpoint = this.metricsOptions.endpoint ?? "/metrics";
       console.log(`  Metrics: http://localhost:${port}${endpoint}`);
+    }
+    if (this.openApiSpec) {
+      const specEndpoint = this.openApiOptions.endpoint ?? "/openapi.json";
+      console.log(`  OpenAPI: http://localhost:${port}${specEndpoint}`);
+      if (this.openApiOptions.swaggerUI !== false) {
+        const swaggerEndpoint = this.openApiOptions.swaggerEndpoint ?? "/swagger";
+        console.log(`  Swagger: http://localhost:${port}${swaggerEndpoint}`);
+      }
     }
 
     serve({
