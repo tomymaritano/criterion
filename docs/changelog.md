@@ -2,6 +2,25 @@
 
 All notable changes to Criterion are documented here.
 
+## [0.3.0] - 2024-12-29
+
+### Added
+- **@criterionx/server** — HTTP server for decisions with auto-generated docs
+  - `createServer()` for exposing decisions as REST endpoints
+  - Interactive `/docs` UI (Swagger-like)
+  - JSON Schema export via `/decisions/:id/schema`
+  - Built on [Hono](https://hono.dev/) for edge compatibility
+- **Monorepo structure** — pnpm workspaces with `packages/core` and `packages/server`
+- **Server documentation** — Guide and API reference for @criterionx/server
+
+### Changed
+- Migrated from npm to pnpm
+- TypeScript config refactored to shared base
+
+### Fixed
+- Falsy input validation (0, false, "" now accepted as valid inputs)
+- CI workflow order for monorepo builds
+
 ## [0.2.0] - 2024-12-29
 
 ### Added
