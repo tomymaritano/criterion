@@ -51,6 +51,9 @@
   "peerDependencies": {
     "zod": "^3.22.0"
   },
+  "dependencies": {
+    "zod-to-json-schema": "^3.22.0"
+  },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.0.0",
     "tsup": "^8.0.0",
