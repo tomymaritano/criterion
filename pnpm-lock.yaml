@@ -15,6 +15,28 @@ importers:
         specifier: ^1.6.4
         version: 1.6.4(@algolia/client-search@5.46.2)(@types/node@25.0.3)(postcss@8.5.6)(search-insights@2.17.3)(typescript@5.9.3)
 
+  packages/cli:
+    dependencies:
+      commander:
+        specifier: ^12.0.0
+        version: 12.1.0
+      picocolors:
+        specifier: ^1.0.0
+        version: 1.1.1
+    devDependencies:
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.1(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)
+      tsx:
+        specifier: ^4.0.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.0.16(@types/node@25.0.3)(tsx@4.21.0)
+
   packages/core:
     dependencies:
       zod-to-json-schema:
@@ -910,6 +932,10 @@ packages:
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
+
+  commander@12.1.0:
+    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
+    engines: {node: '>=18'}
 
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
@@ -2296,6 +2322,8 @@ snapshots:
   color-name@1.1.4: {}
 
   comma-separated-tokens@2.0.3: {}
+
+  commander@12.1.0: {}
 
   commander@4.1.1: {}
 
