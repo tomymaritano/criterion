@@ -2,7 +2,7 @@
   "name": "criterionx-vscode",
   "displayName": "Criterion",
   "description": "VS Code extension for Criterion decision engine - syntax highlighting, snippets, and validation",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "criterionx",
   "license": "MIT",
   "repository": {
