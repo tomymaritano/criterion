@@ -110,4 +110,4 @@ The core will remain small, pure, and focused.
 
 Want to help shape Criterion's future? See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Ideas and feedback are welcome in [GitHub Discussions](https://github.com/tomymaritano/criterion/discussions).
+Ideas and feedback are welcome in [GitHub Discussions](https://github.com/tomymaritano/criterionx/discussions).

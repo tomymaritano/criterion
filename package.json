@@ -45,12 +45,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tomymaritano/criterion.git"
+    "url": "https://github.com/tomymaritano/criterionx.git"
   },
   "bugs": {
-    "url": "https://github.com/tomymaritano/criterion/issues"
+    "url": "https://github.com/tomymaritano/criterionx/issues"
   },
-  "homepage": "https://github.com/tomymaritano/criterion#readme",
+  "homepage": "https://github.com/tomymaritano/criterionx#readme",
   "devDependencies": {
     "@vitest/coverage-v8": "^2.0.0",
     "tsup": "^8.0.0",
