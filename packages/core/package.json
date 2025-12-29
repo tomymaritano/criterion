@@ -49,14 +49,14 @@
   },
   "homepage": "https://github.com/tomymaritano/criterionx#readme",
   "peerDependencies": {
-    "zod": "^3.22.0"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^2.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.3.0",
     "vitest": "^2.0.0",
-    "zod": "^3.22.0"
+    "zod": "^4.2.1"
   },
   "engines": {
     "node": ">=18"
