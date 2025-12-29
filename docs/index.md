@@ -13,7 +13,10 @@ hero:
       text: Get Started
       link: /guide/getting-started
     - theme: alt
-      text: View on GitHub
+      text: Try it Now
+      link: /guide/playground
+    - theme: alt
+      text: GitHub
       link: https://github.com/tomymaritano/criterionx
 
 features:
