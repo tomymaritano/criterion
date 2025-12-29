@@ -306,6 +306,183 @@ describe("Engine", () => {
   });
 });
 
+describe("NO_MATCH and INVALID_OUTPUT", () => {
+  // Decision without catch-all rule
+  const strictDecision = defineDecision({
+    id: "strict-decision",
+    version: "1.0.0",
+    inputSchema: z.object({ value: z.number() }),
+    outputSchema: z.object({ result: z.string() }),
+    profileSchema: z.object({}),
+    rules: [
+      createRule({
+        id: "only-positive",
+        when: (ctx) => ctx.value > 0,
+        emit: () => ({ result: "positive" }),
+        explain: () => "Value is positive",
+      }),
+    ],
+  });
+
+  it("should return NO_MATCH when no rule matches", () => {
+    const result = engine.run(
+      strictDecision,
+      { value: -5 },
+      { profile: {} }
+    );
+
+    expect(result.status).toBe("NO_MATCH");
+    expect(result.data).toBeNull();
+    expect(result.meta.explanation).toContain("No rule matched");
+  });
+
+  // Decision with invalid output
+  const badOutputDecision = defineDecision({
+    id: "bad-output-decision",
+    version: "1.0.0",
+    inputSchema: z.object({ value: z.number() }),
+    outputSchema: z.object({ result: z.string().min(10) }), // Requires min 10 chars
+    profileSchema: z.object({}),
+    rules: [
+      createRule({
+        id: "short-output",
+        when: () => true,
+        emit: () => ({ result: "short" }), // Only 5 chars, will fail validation
+        explain: () => "Always matches",
+      }),
+    ],
+  });
+
+  it("should return INVALID_OUTPUT when rule emits invalid data", () => {
+    const result = engine.run(
+      badOutputDecision,
+      { value: 1 },
+      { profile: {} }
+    );
+
+    expect(result.status).toBe("INVALID_OUTPUT");
+    expect(result.data).toBeNull();
+    expect(result.meta.explanation).toContain("Output validation failed");
+  });
+});
+
+describe("explain() with profile ID", () => {
+  const simpleDecision = defineDecision({
+    id: "simple-decision",
+    version: "1.0.0",
+    inputSchema: z.object({ value: z.number() }),
+    outputSchema: z.object({ result: z.string() }),
+    profileSchema: z.object({ threshold: z.number() }),
+    rules: [
+      createRule({
+        id: "above-threshold",
+        when: (ctx, profile) => ctx.value > profile.threshold,
+        emit: () => ({ result: "above" }),
+        explain: () => "Value above threshold",
+      }),
+      createRule({
+        id: "default",
+        when: () => true,
+        emit: () => ({ result: "below" }),
+        explain: () => "Default",
+      }),
+    ],
+  });
+
+  it("should include profile ID in explanation when using registry", () => {
+    const registry = createProfileRegistry<{ threshold: number }>();
+    registry.register("my-profile", { threshold: 10 });
+
+    const result = engine.run(
+      simpleDecision,
+      { value: 5 },
+      { profile: "my-profile" },
+      registry
+    );
+
+    const explanation = engine.explain(result);
+
+    expect(explanation).toContain("Profile: my-profile");
+  });
+});
+
+describe("Rule execution errors", () => {
+  it("should return INVALID_INPUT when rule.when() throws", () => {
+    const throwingDecision = defineDecision({
+      id: "throwing-when",
+      version: "1.0.0",
+      inputSchema: z.object({ value: z.number() }),
+      outputSchema: z.object({ result: z.string() }),
+      profileSchema: z.object({}),
+      rules: [
+        createRule({
+          id: "throws-in-when",
+          when: () => {
+            throw new Error("when() exploded");
+          },
+          emit: () => ({ result: "never" }),
+          explain: () => "never",
+        }),
+      ],
+    });
+
+    const result = engine.run(
+      throwingDecision,
+      { value: 1 },
+      { profile: {} }
+    );
+
+    expect(result.status).toBe("INVALID_INPUT");
+    expect(result.meta.explanation).toContain("Rule evaluation error");
+    expect(result.meta.explanation).toContain("throws-in-when");
+  });
+
+  it("should return INVALID_OUTPUT when rule.emit() throws", () => {
+    const throwingDecision = defineDecision({
+      id: "throwing-emit",
+      version: "1.0.0",
+      inputSchema: z.object({ value: z.number() }),
+      outputSchema: z.object({ result: z.string() }),
+      profileSchema: z.object({}),
+      rules: [
+        createRule({
+          id: "throws-in-emit",
+          when: () => true,
+          emit: () => {
+            throw new Error("emit() exploded");
+          },
+          explain: () => "matched",
+        }),
+      ],
+    });
+
+    const result = engine.run(
+      throwingDecision,
+      { value: 1 },
+      { profile: {} }
+    );
+
+    expect(result.status).toBe("INVALID_OUTPUT");
+    expect(result.meta.explanation).toContain("Rule emit error");
+    expect(result.meta.explanation).toContain("throws-in-emit");
+  });
+});
+
+describe("ProfileRegistry.has()", () => {
+  it("should return true when profile exists", () => {
+    const registry = createProfileRegistry<{ value: number }>();
+    registry.register("test", { value: 1 });
+
+    expect(registry.has("test")).toBe(true);
+  });
+
+  it("should return false when profile does not exist", () => {
+    const registry = createProfileRegistry<{ value: number }>();
+
+    expect(registry.has("nonexistent")).toBe(false);
+  });
+});
+
 describe("User Tier Eligibility Decision", () => {
   const tierDecision = defineDecision({
     id: "user-tier-eligibility",
