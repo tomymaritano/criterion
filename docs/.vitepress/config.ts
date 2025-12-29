@@ -17,6 +17,7 @@ export default defineConfig({
       { text: "Guide", link: "/guide/getting-started" },
       { text: "API", link: "/api/engine" },
       { text: "Examples", link: "/examples/currency-risk" },
+      { text: "Architecture", link: "/architecture/manifesto" },
       {
         text: "0.1.2",
         items: [
@@ -89,6 +90,32 @@ export default defineConfig({
           text: "Other",
           items: [
             { text: "User Eligibility", link: "/examples/user-eligibility" },
+          ],
+        },
+      ],
+      "/architecture/": [
+        {
+          text: "Philosophy",
+          items: [
+            { text: "Manifesto", link: "/architecture/manifesto" },
+            { text: "Invariants", link: "/architecture/invariants" },
+            { text: "Out of Scope", link: "/architecture/out-of-scope" },
+          ],
+        },
+        {
+          text: "Design",
+          items: [
+            { text: "Core Concepts", link: "/architecture/core-concepts" },
+            { text: "API Surface", link: "/architecture/api-surface" },
+            { text: "Decision Profiles", link: "/architecture/decision-profiles" },
+          ],
+        },
+        {
+          text: "Patterns",
+          items: [
+            { text: "Integration Patterns", link: "/architecture/integration-patterns" },
+            { text: "Anti-Patterns", link: "/architecture/anti-patterns" },
+            { text: "Versioning", link: "/architecture/versioning" },
           ],
         },
       ],
