@@ -1,0 +1,97 @@
+import { defineConfig } from "vitepress";
+
+export default defineConfig({
+  title: "Criterion",
+  description: "Universal decision engine for business-critical decisions",
+
+  base: "/criterion/",
+
+  head: [
+    ["link", { rel: "icon", type: "image/svg+xml", href: "/criterion/logo.svg" }],
+  ],
+
+  themeConfig: {
+    logo: "/logo.svg",
+
+    nav: [
+      { text: "Guide", link: "/guide/getting-started" },
+      { text: "API", link: "/api/engine" },
+      { text: "Examples", link: "/examples/currency-risk" },
+      {
+        text: "0.1.2",
+        items: [
+          { text: "Changelog", link: "/changelog" },
+          { text: "npm", link: "https://www.npmjs.com/package/@criterionx/core" },
+        ],
+      },
+    ],
+
+    sidebar: {
+      "/guide/": [
+        {
+          text: "Introduction",
+          items: [
+            { text: "What is Criterion?", link: "/guide/what-is-criterion" },
+            { text: "Getting Started", link: "/guide/getting-started" },
+            { text: "Core Concepts", link: "/guide/core-concepts" },
+          ],
+        },
+        {
+          text: "Fundamentals",
+          items: [
+            { text: "Decisions", link: "/guide/decisions" },
+            { text: "Rules", link: "/guide/rules" },
+            { text: "Profiles", link: "/guide/profiles" },
+            { text: "Validation", link: "/guide/validation" },
+          ],
+        },
+        {
+          text: "Advanced",
+          items: [
+            { text: "Profile Registry", link: "/guide/profile-registry" },
+            { text: "Explainability", link: "/guide/explainability" },
+            { text: "Testing", link: "/guide/testing" },
+          ],
+        },
+      ],
+      "/api/": [
+        {
+          text: "API Reference",
+          items: [
+            { text: "Engine", link: "/api/engine" },
+            { text: "Types", link: "/api/types" },
+            { text: "Helpers", link: "/api/helpers" },
+          ],
+        },
+      ],
+      "/examples/": [
+        {
+          text: "Examples",
+          items: [
+            { text: "Currency Risk", link: "/examples/currency-risk" },
+            { text: "User Eligibility", link: "/examples/user-eligibility" },
+            { text: "Loan Approval", link: "/examples/loan-approval" },
+          ],
+        },
+      ],
+    },
+
+    socialLinks: [
+      { icon: "github", link: "https://github.com/tomymaritano/criterion" },
+    ],
+
+    footer: {
+      message: "Released under the MIT License.",
+      copyright: "Copyright 2024-present Tomas Maritano",
+    },
+
+    search: {
+      provider: "local",
+    },
+
+    editLink: {
+      pattern: "https://github.com/tomymaritano/criterion/edit/main/docs/:path",
+      text: "Edit this page on GitHub",
+    },
+  },
+});
