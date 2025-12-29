@@ -34,6 +34,7 @@ export default defineConfig({
           items: [
             { text: "What is Criterion?", link: "/guide/what-is-criterion" },
             { text: "Getting Started", link: "/guide/getting-started" },
+            { text: "Migration Guide", link: "/guide/migration" },
             { text: "Core Concepts", link: "/guide/core-concepts" },
           ],
         },
