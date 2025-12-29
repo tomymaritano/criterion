@@ -1,0 +1,46 @@
+%%{init: {'theme': 'neutral'}}%%
+flowchart TB
+    Start([engine.run]) --> ValidateInput{Validate Input}
+
+    ValidateInput -->|Invalid| InvalidInput[/"INVALID_INPUT"/]
+    ValidateInput -->|Valid| ValidateProfile{Validate Profile}
+
+    ValidateProfile -->|Invalid| InvalidProfile[/"INVALID_INPUT (profile)"/]
+    ValidateProfile -->|Valid| InitTrace[Initialize Trace]
+
+    InitTrace --> EvalLoop[Start Rule Evaluation]
+
+    subgraph RuleEvaluation["Rule Evaluation (Sequential)"]
+        EvalLoop --> Rule1{Rule 1: when?}
+        Rule1 -->|No Match| Log1[Log to trace]
+        Log1 --> Rule2{Rule 2: when?}
+        Rule2 -->|No Match| Log2[Log to trace]
+        Log2 --> RuleN{Rule N: when?}
+        RuleN -->|No Match| LogN[Log to trace]
+
+        Rule1 -->|Match| Emit1[Emit output]
+        Rule2 -->|Match| Emit2[Emit output]
+        RuleN -->|Match| EmitN[Emit output]
+    end
+
+    LogN --> NoMatch[/"NO_MATCH"/]
+
+    Emit1 --> ValidateOutput{Validate Output}
+    Emit2 --> ValidateOutput
+    EmitN --> ValidateOutput
+
+    ValidateOutput -->|Invalid| InvalidOutput[/"INVALID_OUTPUT"/]
+    ValidateOutput -->|Valid| BuildResult[Build Result]
+
+    BuildResult --> OK[/"OK + data + meta"/]
+
+    subgraph Results["Result Status"]
+        InvalidInput
+        InvalidProfile
+        NoMatch
+        InvalidOutput
+        OK
+    end
+
+    style RuleEvaluation fill:#e8f5e9
+    style Results fill:#fff3e0

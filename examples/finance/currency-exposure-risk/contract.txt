@@ -1,0 +1,31 @@
+DECISION CONTRACT — CURRENCY EXPOSURE RISK
+
+Inputs:
+- holding_days: required, integer, > 0
+- monthly_inflation_rate: required, numeric, >= 0
+- currency_volatility: optional, numeric, >= 0
+
+Profile parameters (injected):
+- high_risk_inflation_threshold: required, numeric, >= 0
+- high_risk_horizon_days: required, integer, > 0
+- medium_risk_inflation_threshold: required, numeric, >= 0
+- medium_risk_horizon_days: required, integer, > 0
+
+Evaluation:
+- Rules evaluated sequentially
+- First match wins
+
+Outputs:
+- risk_level: [LOW, MEDIUM, HIGH]
+- reason: non-empty string
+
+Failure modes:
+- Invalid input → INVALID_INPUT
+- Invalid profile parameters → INVALID_INPUT (profile invalid)
+- Output invalid → INVALID_OUTPUT
+- No rule matched → NO_MATCH (should not happen if defaults exist)
+
+Guarantees:
+- Deterministic
+- Explainable
+- Domain-agnostic

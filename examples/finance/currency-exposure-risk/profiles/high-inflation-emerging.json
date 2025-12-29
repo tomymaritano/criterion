@@ -1,0 +1,10 @@
+{
+  "id": "high-inflation-emerging",
+  "description": "High inflation / emerging-market sensitivity profile",
+  "thresholds": {
+    "high_risk_inflation_threshold": 0.05,
+    "high_risk_horizon_days": 60,
+    "medium_risk_inflation_threshold": 0.03,
+    "medium_risk_horizon_days": 30
+  }
+}

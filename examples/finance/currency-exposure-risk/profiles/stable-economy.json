@@ -1,0 +1,10 @@
+{
+  "id": "stable-economy",
+  "description": "Low inflation / stable economy sensitivity profile",
+  "thresholds": {
+    "high_risk_inflation_threshold": 0.02,
+    "high_risk_horizon_days": 120,
+    "medium_risk_inflation_threshold": 0.01,
+    "medium_risk_horizon_days": 60
+  }
+}

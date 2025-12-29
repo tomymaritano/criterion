@@ -1,0 +1,23 @@
+DECISION CONTRACT — USER TIER ELIGIBILITY
+
+Inputs:
+- account_age_days: required, integer, >= 0
+- monthly_transactions: required, integer, >= 0
+- verified_identity: required, boolean
+
+Evaluation:
+- Rules evaluated sequentially
+- First match wins
+
+Outputs:
+- tier: [BASIC, STANDARD, PREMIUM]
+- reason: non-empty string
+
+Failure modes:
+- Invalid input → INVALID_INPUT
+- Output invalid → INVALID_OUTPUT
+
+Guarantees:
+- Deterministic
+- Explainable
+- Domain-agnostic

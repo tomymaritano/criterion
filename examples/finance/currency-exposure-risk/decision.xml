@@ -1,0 +1,64 @@
+<decision id="currency-exposure-risk" version="1.0.0">
+
+  <description>
+    Evaluates the risk of holding a local currency over a given horizon,
+    using profile thresholds for interpretation.
+  </description>
+
+  <inputs>
+    <number name="holding_days" />
+    <number name="monthly_inflation_rate" />
+    <number name="currency_volatility" optional="true" />
+  </inputs>
+
+  <profile-parameters>
+    <number name="high_risk_inflation_threshold" />
+    <number name="high_risk_horizon_days" />
+    <number name="medium_risk_inflation_threshold" />
+    <number name="medium_risk_horizon_days" />
+  </profile-parameters>
+
+  <outputs>
+    <enum name="risk_level">
+      <value>LOW</value>
+      <value>MEDIUM</value>
+      <value>HIGH</value>
+    </enum>
+    <string name="reason" />
+  </outputs>
+
+  <rules>
+
+    <rule id="high-risk">
+      <when>
+        holding_days >= profile.high_risk_horizon_days
+        AND monthly_inflation_rate >= profile.high_risk_inflation_threshold
+      </when>
+      <emit>
+        risk_level = "HIGH"
+        reason = "Long exposure under high inflation thresholds for this profile"
+      </emit>
+    </rule>
+
+    <rule id="medium-risk">
+      <when>
+        holding_days >= profile.medium_risk_horizon_days
+        AND monthly_inflation_rate >= profile.medium_risk_inflation_threshold
+      </when>
+      <emit>
+        risk_level = "MEDIUM"
+        reason = "Medium exposure under moderate inflation thresholds for this profile"
+      </emit>
+    </rule>
+
+    <rule id="low-risk-default">
+      <when>true</when>
+      <emit>
+        risk_level = "LOW"
+        reason = "Default: does not meet higher risk thresholds"
+      </emit>
+    </rule>
+
+  </rules>
+
+</decision>

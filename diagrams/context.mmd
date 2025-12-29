@@ -1,0 +1,42 @@
+%%{init: {'theme': 'neutral'}}%%
+flowchart TB
+    subgraph External["External Systems (Host Responsibility)"]
+        DB[(Database)]
+        API[External APIs]
+        Cache[Cache Layer]
+        User[User Input]
+    end
+
+    subgraph Builder["Context Builder"]
+        Fetch[Fetch Data]
+        Normalize[Normalize Values]
+        Validate[Validate Constraints]
+        Freeze[Freeze Context]
+    end
+
+    subgraph Criterion["Criterion Engine"]
+        Context[Immutable Context]
+        Profile[Decision Profile]
+        Engine[Engine.run]
+    end
+
+    DB --> Fetch
+    API --> Fetch
+    Cache --> Fetch
+    User --> Fetch
+
+    Fetch --> Normalize
+    Normalize --> Validate
+    Validate --> Freeze
+
+    Freeze --> Context
+    ProfileStore[(Profile Store)] --> Profile
+
+    Context --> Engine
+    Profile --> Engine
+
+    Engine --> Result[Result + Explanation]
+
+    style Criterion fill:#e1f5fe
+    style Builder fill:#fff3e0
+    style External fill:#fce4ec

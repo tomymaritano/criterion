@@ -1,0 +1,60 @@
+<decision id="user-tier-eligibility" version="1.0.0">
+
+  <description>
+    Determines a user's access tier based on tenure, activity, and verification status.
+  </description>
+
+  <inputs>
+    <number name="account_age_days" />
+    <number name="monthly_transactions" />
+    <boolean name="verified_identity" />
+  </inputs>
+
+  <outputs>
+    <enum name="tier">
+      <value>BASIC</value>
+      <value>STANDARD</value>
+      <value>PREMIUM</value>
+    </enum>
+    <string name="reason" />
+  </outputs>
+
+  <rules>
+
+    <rule id="premium">
+      <when>
+        verified_identity == true
+        AND account_age_days >= 90
+        AND monthly_transactions >= 50
+      </when>
+      <emit>
+        tier = "PREMIUM"
+        reason = "Verified user with high tenure and high activity"
+      </emit>
+    </rule>
+
+    <rule id="standard">
+      <when>
+        verified_identity == true
+        AND account_age_days >= 30
+        AND monthly_transactions >= 10
+      </when>
+      <emit>
+        tier = "STANDARD"
+        reason = "Verified user meeting standard tenure and activity thresholds"
+      </emit>
+    </rule>
+
+    <rule id="basic-default">
+      <when>
+        true
+      </when>
+      <emit>
+        tier = "BASIC"
+        reason = "Default access tier"
+      </emit>
+    </rule>
+
+  </rules>
+
+</decision>
