@@ -24,14 +24,14 @@ The core will remain small, pure, and focused.
 
 ## Phases
 
-### Phase 1: Foundation (v0.1.x - v0.2.x)
+### Phase 1: Foundation (v0.1.x - v0.2.x) ✅
 *Stabilize the core and documentation*
 
-- [ ] More real-world examples (e-commerce, healthcare, fintech)
-- [ ] Migration guide from if/else spaghetti code
-- [ ] Performance benchmarks
+- [x] More real-world examples (e-commerce, healthcare, fintech)
+- [x] Migration guide from if/else spaghetti code
+- [x] Performance benchmarks
 - [ ] 100% test coverage
-- [ ] Interactive playground (CodeSandbox/StackBlitz)
+- [x] Interactive playground (CodeSandbox/StackBlitz)
 
 ### Phase 2: Developer Experience (v0.3.x - v0.5.x)
 *Tools for productivity*
