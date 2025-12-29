@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@criterionx/core"><img src="https://img.shields.io/npm/v/@criterionx/core.svg" alt="npm version"></a>
-  <a href="https://github.com/tomymaritano/criterion/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@criterionx/core.svg" alt="license"></a>
+  <a href="https://github.com/tomymaritano/criterionx/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@criterionx/core.svg" alt="license"></a>
   <a href="https://tomymaritano.github.io/criterionx/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen.svg" alt="docs"></a>
 </p>
 

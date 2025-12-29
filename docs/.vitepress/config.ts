@@ -4,10 +4,10 @@ export default defineConfig({
   title: "Criterion",
   description: "Universal decision engine for business-critical decisions",
 
-  base: "/criterion/",
+  base: "/criterionx/",
 
   head: [
-    ["link", { rel: "icon", type: "image/svg+xml", href: "/criterion/logo.svg" }],
+    ["link", { rel: "icon", type: "image/svg+xml", href: "/criterionx/logo.svg" }],
   ],
 
   themeConfig: {
@@ -95,7 +95,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/tomymaritano/criterion" },
+      { icon: "github", link: "https://github.com/tomymaritano/criterionx" },
     ],
 
     footer: {
@@ -108,7 +108,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: "https://github.com/tomymaritano/criterion/edit/main/docs/:path",
+      pattern: "https://github.com/tomymaritano/criterionx/edit/main/docs/:path",
       text: "Edit this page on GitHub",
     },
   },
