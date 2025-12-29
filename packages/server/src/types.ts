@@ -62,6 +62,18 @@ export interface Hooks {
 }
 
 /**
+ * Metrics configuration options
+ */
+export interface MetricsOptions {
+  /** Enable metrics collection (default: false) */
+  enabled?: boolean;
+  /** Endpoint path for metrics (default: /metrics) */
+  endpoint?: string;
+  /** Histogram buckets for latency in seconds */
+  buckets?: number[];
+}
+
+/**
  * Server configuration options
  */
 export interface ServerOptions {
@@ -74,6 +86,8 @@ export interface ServerOptions {
   cors?: boolean;
   /** Middleware hooks for evaluation lifecycle */
   hooks?: Hooks;
+  /** Prometheus metrics configuration */
+  metrics?: MetricsOptions;
 }
 
 /**

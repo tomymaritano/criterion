@@ -33,6 +33,9 @@ interface ServerOptions {
 
   /** Middleware hooks for evaluation lifecycle */
   hooks?: Hooks;
+
+  /** Prometheus metrics configuration */
+  metrics?: MetricsOptions;
 }
 ```
 
@@ -95,6 +98,25 @@ server.handler.use("*", async (c, next) => {
 // Add custom routes
 server.handler.get("/health", (c) => c.json({ status: "healthy" }));
 ```
+
+### server.metrics
+
+Access the metrics collector (if enabled).
+
+```typescript
+const server = createServer({
+  decisions: [...],
+  metrics: { enabled: true },
+});
+
+// Access metrics collector
+const collector = server.metrics;
+if (collector) {
+  console.log(collector.toPrometheus());
+}
+```
+
+Returns `MetricsCollector | null`. Returns `null` if metrics are not enabled.
 
 ---
 
@@ -406,3 +428,59 @@ type OnErrorHook = (
 ```
 
 Called when an error occurs during hook execution or evaluation.
+
+### MetricsOptions
+
+```typescript
+interface MetricsOptions {
+  /** Enable metrics collection (default: false) */
+  enabled?: boolean;
+  /** Endpoint path for metrics (default: /metrics) */
+  endpoint?: string;
+  /** Histogram buckets for latency in seconds */
+  buckets?: number[];
+}
+```
+
+### MetricsCollector
+
+The `MetricsCollector` class collects and exports Prometheus metrics.
+
+```typescript
+import { MetricsCollector } from "@criterionx/server";
+
+const collector = new MetricsCollector();
+
+// Increment a counter
+collector.increment("my_counter", { label: "value" });
+
+// Observe a histogram value
+collector.observe("my_histogram", { label: "value" }, 0.05);
+
+// Export to Prometheus format
+console.log(collector.toPrometheus());
+
+// Reset all metrics
+collector.reset();
+```
+
+**Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `increment(name, labels?, value?)` | Increment a counter |
+| `observe(name, labels, value)` | Record value in histogram |
+| `getCounter(name, labels?)` | Get current counter value |
+| `getHistogram(name, labels)` | Get histogram stats (sum, count) |
+| `toPrometheus()` | Export metrics in Prometheus format |
+| `reset()` | Reset all metrics |
+
+**Metric Constants:**
+
+```typescript
+import {
+  METRIC_EVALUATIONS_TOTAL,        // "criterion_evaluations_total"
+  METRIC_EVALUATION_DURATION_SECONDS, // "criterion_evaluation_duration_seconds"
+  METRIC_RULE_MATCHES_TOTAL,       // "criterion_rule_matches_total"
+} from "@criterionx/server";
+```

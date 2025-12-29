@@ -390,3 +390,184 @@ describe("middleware hooks", () => {
     expect(afterEvaluate).not.toHaveBeenCalled();
   });
 });
+
+describe("metrics", () => {
+  it("should expose /metrics endpoint when enabled", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/metrics")
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/plain");
+  });
+
+  it("should use custom metrics endpoint", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true, endpoint: "/custom-metrics" },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/custom-metrics")
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should not expose /metrics when disabled", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      // metrics not enabled
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/metrics")
+    );
+
+    expect(response.status).toBe(404);
+  });
+
+  it("should track evaluation count", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true },
+    });
+
+    // Make two evaluations
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 15, flag: true, text: "hello" } }),
+      })
+    );
+
+    const metricsResponse = await server.handler.request(
+      new Request("http://localhost/metrics")
+    );
+
+    const metricsText = await metricsResponse.text();
+
+    // Should have evaluation count metrics
+    expect(metricsText).toContain("criterion_evaluations_total");
+    expect(metricsText).toContain('decision_id="test-decision"');
+    expect(metricsText).toContain('status="OK"');
+  });
+
+  it("should track evaluation duration", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    const metricsResponse = await server.handler.request(
+      new Request("http://localhost/metrics")
+    );
+
+    const metricsText = await metricsResponse.text();
+
+    // Should have duration histogram
+    expect(metricsText).toContain("criterion_evaluation_duration_seconds");
+    expect(metricsText).toContain("criterion_evaluation_duration_seconds_bucket");
+    expect(metricsText).toContain("criterion_evaluation_duration_seconds_sum");
+    expect(metricsText).toContain("criterion_evaluation_duration_seconds_count");
+  });
+
+  it("should track rule matches", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true },
+    });
+
+    // Trigger the "above-threshold" rule
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 15, flag: true, text: "hello" } }),
+      })
+    );
+
+    // Trigger the "default" rule
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    const metricsResponse = await server.handler.request(
+      new Request("http://localhost/metrics")
+    );
+
+    const metricsText = await metricsResponse.text();
+
+    // Should have rule match metrics
+    expect(metricsText).toContain("criterion_rule_matches_total");
+    expect(metricsText).toContain('rule_id="above-threshold"');
+    expect(metricsText).toContain('rule_id="default"');
+  });
+
+  it("should indicate metrics in health check", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/")
+    );
+
+    const data = await response.json();
+    expect(data.metrics).toBe(true);
+  });
+
+  it("should provide access to metrics collector programmatically", () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      metrics: { enabled: true },
+    });
+
+    expect(server.metrics).not.toBeNull();
+    expect(server.metrics!.toPrometheus).toBeDefined();
+  });
+
+  it("should return null metrics collector when disabled", () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+    });
+
+    expect(server.metrics).toBeNull();
+  });
+});
