@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import pc from "picocolors";
 import { initCommand } from "./commands/init.js";
 import { newCommand } from "./commands/new.js";
+import { listCommand } from "./commands/list.js";
+import { validateCommand } from "./commands/validate.js";
 
 const program = new Command();
 
 program
   .name("criterion")
-  .description("CLI for scaffolding Criterion decisions")
-  .version("0.1.0");
+  .description("CLI for scaffolding and managing Criterion decisions")
+  .version("0.3.0");
 
 // criterion init
 program
@@ -28,20 +29,19 @@ program
   .option("-d, --dir <directory>", "Target directory", "src/decisions")
   .action(newCommand);
 
-// criterion list (future)
+// criterion list
 program
   .command("list")
   .description("List all decisions in the project")
-  .action(() => {
-    console.log(pc.yellow("Coming soon: criterion list"));
-  });
+  .option("-d, --dir <directory>", "Directory to search", ".")
+  .option("--json", "Output as JSON")
+  .action(listCommand);
 
-// criterion validate (future)
+// criterion validate
 program
   .command("validate")
   .description("Validate all decisions in the project")
-  .action(() => {
-    console.log(pc.yellow("Coming soon: criterion validate"));
-  });
+  .option("-d, --dir <directory>", "Directory to validate", ".")
+  .action(validateCommand);
 
 program.parse();

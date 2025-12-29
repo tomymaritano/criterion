@@ -146,18 +146,21 @@ console.log(euResult.data);
 ## Using Profile Registry
 
 ```typescript
+import { Engine, createProfileRegistry } from "@criterionx/core";
+
+// Create and populate registry
+const registry = createProfileRegistry<typeof usProfile>();
+registry.register("us", usProfile);
+registry.register("eu", euProfile);
+registry.register("latam", latamProfile);
+
+// Use by ID - pass registry as 4th argument
 const engine = new Engine();
-
-// Register profiles
-engine.registerProfile("currency-risk-assessment", "us", usProfile);
-engine.registerProfile("currency-risk-assessment", "eu", euProfile);
-engine.registerProfile("currency-risk-assessment", "latam", latamProfile);
-
-// Use by ID
 const result = engine.run(
   currencyRiskDecision,
   { amount: 7500, currency: "USD", merchant: "amazon" },
-  { profile: "us" }  // Profile ID instead of object
+  { profile: "us" },  // Profile ID instead of object
+  registry            // Registry containing profiles
 );
 ```
 

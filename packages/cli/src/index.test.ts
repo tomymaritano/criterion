@@ -14,6 +14,6 @@ describe("CLI", () => {
 
   it("should show version", () => {
     const output = execSync(`node ${CLI_PATH} --version`, { encoding: "utf-8" });
-    expect(output.trim()).toBe("0.1.0");
+    expect(output.trim()).toBe("0.3.0");
   });
 });

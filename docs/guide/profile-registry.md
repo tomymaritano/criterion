@@ -32,20 +32,27 @@ registry.register("eu-strict", {
 
 ## Using with Engine
 
+Pass the registry as the 4th argument to `engine.run()`:
+
 ```typescript
+import { Engine, createProfileRegistry } from "@criterionx/core";
+
+// Create and populate registry
+const registry = createProfileRegistry<ProfileType>();
+registry.register("us", usProfile);
+registry.register("eu", euProfile);
+
+// Run with profile ID - pass registry as 4th argument
 const engine = new Engine();
-
-// Register profiles on the engine
-engine.registerProfile("risk-decision", "us", usProfile);
-engine.registerProfile("risk-decision", "eu", euProfile);
-
-// Run with profile ID
 const result = engine.run(
   riskDecision,
   input,
-  { profile: "us" }  // String ID instead of object
+  { profile: "us" },  // String ID
+  registry            // Registry containing profiles
 );
 ```
+
+> **Note:** The registry is passed per-call, not stored on the engine. This keeps the engine stateless and allows different registries for different contexts.
 
 ## Checking Profiles
 

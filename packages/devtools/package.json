@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/devtools",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Development tools for debugging Criterion decisions",
   "type": "module",
   "main": "dist/index.js",
@@ -14,6 +14,8 @@
     "build": "tsup src/index.ts --format esm --dts --clean",
     "dev": "tsup src/index.ts --format esm --dts --watch",
     "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [

@@ -33,10 +33,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Currency Exposure Risk (finance, with profiles)
 - User Tier Eligibility (non-finance)
 
+## [0.3.0] - 2024-12-29
+
+### Added
+
+#### @criterionx/server
+- HTTP server with OpenAPI specification generation
+- Swagger UI and ReDoc documentation endpoints
+- Prometheus metrics middleware
+- Middleware hooks (beforeEvaluate, afterEvaluate, onError)
+- CORS support
+
+#### @criterionx/cli
+- `criterion validate` - Validate all decisions in a project
+- `criterion list` - List all decisions with ID, version, and rule count
+- JSON output support (`--json` flag)
+
+#### @criterionx/testing
+- Property-based testing with `fast-check`
+- Decision fuzzing utilities
+- Dead rule detection
+- Coverage analysis
+
+#### @criterionx/devtools
+- Trace collector for debugging decisions
+- HTML report generation
+- Evaluation timeline visualization
+
+#### VSCode Extension
+- Syntax highlighting for `.criterion.ts` files
+- Snippets for decision and rule creation
+- Hover documentation for Criterion keywords
+- Real-time validation diagnostics
+- `criterion.newDecision` command
+
+### Changed
+
+- Aligned all package versions to 0.3.0
+- Standardized test scripts across all packages
+- Improved documentation examples
+
+### Fixed
+
+- Documentation incorrectly showed `engine.registerProfile()` method that doesn't exist
+- Corrected examples to use `createProfileRegistry()` pattern
+- Fixed VSCode extension validation logic
+
+### Documentation
+
+- Rewrote profile registry documentation with correct API usage
+- Added complete currency risk example with registry pattern
+- Improved API reference documentation
+
+## [0.2.0] - 2024-12-29
+
+### Added
+
+- @criterionx/server package
+- @criterionx/testing package
+- @criterionx/devtools package
+- @criterionx/cli package
+- VSCode extension (criterionx-vscode)
+
 ## [Unreleased]
 
 ### Planned
 
-- Additional examples
-- Performance benchmarks
-- More comprehensive test coverage
+- CLI `criterion deploy` command
+- Remote profile loading
+- OpenTelemetry integration
