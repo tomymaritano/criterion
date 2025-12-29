@@ -1,5 +1,5 @@
 {
-  "name": "@criterion/core",
+  "name": "@criterionx/core",
   "version": "0.1.1",
   "description": "Universal decision engine for business-critical decisions",
   "type": "module",
