@@ -7,11 +7,11 @@ export default defineConfig({
   base: "/criterionx/",
 
   head: [
-    ["link", { rel: "icon", type: "image/svg+xml", href: "/criterionx/logo.svg" }],
+    ["link", { rel: "icon", type: "image/svg+xml", href: "/criterionx/isologo.svg" }],
   ],
 
   themeConfig: {
-    logo: "/logo.svg",
+    logo: "/criterionxlogo.svg",
 
     nav: [
       { text: "Guide", link: "/guide/getting-started" },

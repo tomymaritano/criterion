@@ -6,7 +6,7 @@ hero:
   text: Decision Engine
   tagline: Universal, deterministic, and explainable decisions for business-critical systems
   image:
-    src: /logo.svg
+    src: /isologo.svg
     alt: Criterion
   actions:
     - theme: brand
