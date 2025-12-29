@@ -58,3 +58,7 @@ export {
 
 // Engine
 export { Engine, engine } from "./engine.js";
+
+// Schema
+export type { JsonSchema, DecisionSchema } from "./schema.js";
+export { toJsonSchema, extractDecisionSchema } from "./schema.js";

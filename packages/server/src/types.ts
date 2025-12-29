@@ -1,5 +1,8 @@
 import type { Decision } from "@criterionx/core";
 
+// Re-export schema types from core
+export type { JsonSchema, DecisionSchema } from "@criterionx/core";
+
 /**
  * Server configuration options
  */
@@ -31,29 +34,4 @@ export interface DecisionInfo {
   version: string;
   description?: string;
   meta?: Record<string, unknown>;
-}
-
-/**
- * JSON Schema representation
- */
-export interface JsonSchema {
-  $schema?: string;
-  type?: string;
-  properties?: Record<string, JsonSchema>;
-  required?: string[];
-  additionalProperties?: boolean;
-  items?: JsonSchema;
-  enum?: unknown[];
-  [key: string]: unknown;
-}
-
-/**
- * Decision schema export
- */
-export interface DecisionSchema {
-  id: string;
-  version: string;
-  inputSchema: JsonSchema;
-  outputSchema: JsonSchema;
-  profileSchema: JsonSchema;
 }

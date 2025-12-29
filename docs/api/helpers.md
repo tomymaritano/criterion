@@ -92,3 +92,64 @@ if (isInlineProfile(options)) {
   // options.profile is string (ID)
 }
 ```
+
+## toJsonSchema()
+
+Convert a Zod schema to JSON Schema.
+
+```typescript
+function toJsonSchema(schema: ZodSchema): JsonSchema
+```
+
+**Example:**
+
+```typescript
+import { toJsonSchema } from "@criterionx/core";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+const jsonSchema = toJsonSchema(schema);
+// {
+//   type: "object",
+//   properties: {
+//     name: { type: "string" },
+//     age: { type: "number" }
+//   },
+//   required: ["name", "age"]
+// }
+```
+
+## extractDecisionSchema()
+
+Extract all schemas from a decision as JSON Schema.
+
+```typescript
+function extractDecisionSchema(
+  decision: Decision<unknown, unknown, unknown>
+): DecisionSchema
+```
+
+**Example:**
+
+```typescript
+import { extractDecisionSchema } from "@criterionx/core";
+
+const schema = extractDecisionSchema(myDecision);
+// {
+//   id: "my-decision",
+//   version: "1.0.0",
+//   inputSchema: { type: "object", ... },
+//   outputSchema: { type: "object", ... },
+//   profileSchema: { type: "object", ... }
+// }
+```
+
+**Use cases:**
+- Generate API documentation
+- Validate JSON inputs externally
+- Generate clients in other languages
+- Integrate with OpenAPI tools

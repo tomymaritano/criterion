@@ -1,29 +1,14 @@
-import { zodToJsonSchema } from "zod-to-json-schema";
-import type { ZodSchema } from "zod";
-import type { Decision } from "@criterionx/core";
-import type { DecisionSchema, JsonSchema } from "./types.js";
+import {
+  toJsonSchema,
+  extractDecisionSchema,
+  type JsonSchema,
+  type DecisionSchema,
+  type Decision,
+} from "@criterionx/core";
 
-/**
- * Convert a Zod schema to JSON Schema
- */
-export function toJsonSchema(schema: ZodSchema): JsonSchema {
-  return zodToJsonSchema(schema, { $refStrategy: "none" }) as JsonSchema;
-}
-
-/**
- * Extract JSON Schemas from a decision
- */
-export function extractDecisionSchema(
-  decision: Decision<unknown, unknown, unknown>
-): DecisionSchema {
-  return {
-    id: decision.id,
-    version: decision.version,
-    inputSchema: toJsonSchema(decision.inputSchema),
-    outputSchema: toJsonSchema(decision.outputSchema),
-    profileSchema: toJsonSchema(decision.profileSchema),
-  };
-}
+// Re-export from core for backwards compatibility
+export { toJsonSchema, extractDecisionSchema };
+export type { JsonSchema, DecisionSchema };
 
 /**
  * Generate OpenAPI-compatible schema for a decision endpoint
