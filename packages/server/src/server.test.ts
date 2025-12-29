@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
 import { defineDecision } from "@criterionx/core";
 import { createServer, toJsonSchema, extractDecisionSchema } from "./index.js";
+import type { HookContext, Hooks } from "./types.js";
 
 // Test decision
 const testDecision = defineDecision({
@@ -201,5 +202,191 @@ describe("falsy input handling", () => {
     expect(response.status).toBe(200);
     expect(data.status).toBe("OK");
     expect(data.data.isEmpty).toBe(true);
+  });
+});
+
+describe("middleware hooks", () => {
+  it("should call beforeEvaluate hook with correct context", async () => {
+    const beforeEvaluate = vi.fn();
+
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      hooks: { beforeEvaluate },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    expect(beforeEvaluate).toHaveBeenCalledTimes(1);
+    const ctx = beforeEvaluate.mock.calls[0][0] as HookContext;
+    expect(ctx.decisionId).toBe("test-decision");
+    expect(ctx.input).toEqual({ value: 5, flag: true, text: "hello" });
+    expect(ctx.profile).toEqual({ threshold: 10 });
+    expect(ctx.requestId).toMatch(/^req_/);
+    expect(ctx.timestamp).toBeInstanceOf(Date);
+  });
+
+  it("should allow beforeEvaluate to modify input", async () => {
+    const beforeEvaluate = vi.fn((ctx: HookContext) => {
+      // Modify input to have value > threshold
+      return { input: { ...ctx.input as object, value: 100 } };
+    });
+
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      hooks: { beforeEvaluate },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    const data = await response.json();
+    expect(data.status).toBe("OK");
+    expect(data.data.result).toBe("ABOVE"); // Modified input triggered different rule
+  });
+
+  it("should call afterEvaluate hook with context and result", async () => {
+    const afterEvaluate = vi.fn();
+
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      hooks: { afterEvaluate },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    expect(afterEvaluate).toHaveBeenCalledTimes(1);
+    const [ctx, result] = afterEvaluate.mock.calls[0];
+    expect(ctx.decisionId).toBe("test-decision");
+    expect(result.status).toBe("OK");
+    expect(result.data).toEqual({ result: "BELOW" });
+  });
+
+  it("should call onError hook when afterEvaluate throws", async () => {
+    const onError = vi.fn();
+    const afterEvaluate = vi.fn(() => {
+      throw new Error("afterEvaluate error");
+    });
+
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      hooks: { afterEvaluate, onError },
+    });
+
+    try {
+      await server.handler.request(
+        new Request("http://localhost/decisions/test-decision", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+        })
+      );
+    } catch {
+      // Expected to throw
+    }
+
+    expect(afterEvaluate).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledTimes(1);
+    const [ctx, error] = onError.mock.calls[0];
+    expect(ctx.decisionId).toBe("test-decision");
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toBe("afterEvaluate error");
+  });
+
+  it("should work with async hooks", async () => {
+    const calls: string[] = [];
+
+    const hooks: Hooks = {
+      beforeEvaluate: async (ctx) => {
+        await new Promise((r) => setTimeout(r, 10));
+        calls.push("before");
+      },
+      afterEvaluate: async (ctx, result) => {
+        await new Promise((r) => setTimeout(r, 10));
+        calls.push("after");
+      },
+    };
+
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      hooks,
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    expect(calls).toEqual(["before", "after"]);
+  });
+
+  it("should work without hooks (optional)", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      // No hooks
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+      })
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should abort evaluation if beforeEvaluate throws", async () => {
+    const afterEvaluate = vi.fn();
+    const beforeEvaluate = vi.fn(() => {
+      throw new Error("Validation failed");
+    });
+
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      hooks: { beforeEvaluate, afterEvaluate },
+    });
+
+    try {
+      await server.handler.request(
+        new Request("http://localhost/decisions/test-decision", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: { value: 5, flag: true, text: "hello" } }),
+        })
+      );
+    } catch {
+      // Expected to throw
+    }
+
+    expect(beforeEvaluate).toHaveBeenCalledTimes(1);
+    expect(afterEvaluate).not.toHaveBeenCalled();
   });
 });
