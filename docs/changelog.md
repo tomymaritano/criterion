@@ -2,6 +2,24 @@
 
 All notable changes to Criterion are documented here.
 
+## [0.2.0] - 2024-12-29
+
+### Added
+- **Interactive Playground** — Try Criterion in browser via StackBlitz
+- **Migration Guide** — Step-by-step guide to convert if/else spaghetti to Criterion decisions
+- **Performance Benchmarks** — Documented ~1M ops/sec for simple decisions
+- **Real-world Examples** — KYC risk assessment, healthcare triage, e-commerce pricing
+- **Architecture Documentation** — ADRs, manifesto, invariants, integration patterns
+- **PR & Issue Templates** — Standardized contribution workflow
+- **Contributing Guide** — Conventional commits, code style, PR process
+
+### Changed
+- Improved PEP handling in KYC example (added fallback rules)
+- Enhanced documentation structure with VitePress sidebar improvements
+
+### Fixed
+- Repository rename from `criterion` to `criterionx` (all URLs updated)
+
 ## [0.1.2] - 2024-12-29
 
 ### Changed
