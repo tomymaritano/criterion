@@ -109,7 +109,7 @@ export class CriterionServer {
         return c.json({ error: "Invalid JSON body" }, 400);
       }
 
-      if (!body.input) {
+      if (body.input === undefined) {
         return c.json({ error: "Missing 'input' in request body" }, 400);
       }
 
