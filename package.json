@@ -22,6 +22,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
+    "benchmark": "tsx benchmarks/run.ts",
     "prepublishOnly": "npm run build",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^2.0.0",
     "tsup": "^8.0.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.0",
     "vitepress": "^1.6.4",
     "vitest": "^2.0.0",
