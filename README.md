@@ -7,7 +7,8 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@criterionx/core"><img src="https://img.shields.io/npm/v/@criterionx/core.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@criterionx/core"><img src="https://img.shields.io/npm/v/@criterionx/core.svg?label=@criterionx/core" alt="core version"></a>
+  <a href="https://www.npmjs.com/package/@criterionx/server"><img src="https://img.shields.io/npm/v/@criterionx/server.svg?label=@criterionx/server" alt="server version"></a>
   <a href="https://github.com/tomymaritano/criterionx/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@criterionx/core.svg" alt="license"></a>
   <a href="https://tomymaritano.github.io/criterionx/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen.svg" alt="docs"></a>
 </p>
@@ -26,13 +27,26 @@ Instead of scattering `if/else` statements across your codebase, you define deci
 
 Every decision returns not just a result, but a complete explanation of *why* that result was reached — perfect for audits, debugging, and compliance.
 
+## Packages
+
+| Package | Description |
+|---------|-------------|
+| [@criterionx/core](./packages/core) | Pure decision engine — no I/O, no side effects |
+| [@criterionx/server](./packages/server) | HTTP server with auto-generated docs |
+
 ## Installation
 
 ```bash
+# Core engine only
 npm install @criterionx/core zod
+
+# With HTTP server
+npm install @criterionx/core @criterionx/server zod
 ```
 
 ## Quick Start
+
+### Using the Core Engine
 
 ```typescript
 import { Engine, defineDecision } from "@criterionx/core";
@@ -75,6 +89,31 @@ console.log(engine.explain(result));
 // Reason: Amount 15000 > 10000
 ```
 
+### Using the HTTP Server
+
+```typescript
+import { createServer } from "@criterionx/server";
+import { riskDecision } from "./decisions";
+
+const server = createServer({
+  decisions: [riskDecision],
+  profiles: {
+    "transaction-risk": { threshold: 10000 },
+  },
+});
+
+server.listen(3000);
+// Server running at http://localhost:3000
+// Docs at http://localhost:3000/docs
+```
+
+```bash
+# Evaluate a decision via HTTP
+curl -X POST http://localhost:3000/decisions/transaction-risk \
+  -H "Content-Type: application/json" \
+  -d '{"input": {"amount": 15000}}'
+```
+
 ## Features
 
 - **Pure & Deterministic** — Same input always produces the same output
@@ -83,13 +122,15 @@ console.log(engine.explain(result));
 - **Profile-Driven** — Parameterize decisions by region, tier, or environment
 - **Zero Side Effects** — No I/O, no database, no external calls
 - **Testable by Design** — Pure functions are trivial to test
+- **HTTP Ready** — Expose decisions as REST endpoints with auto-generated docs
 
 ## Documentation
 
-Full documentation available at **[tomymaritano.github.io/criterion](https://tomymaritano.github.io/criterionx/)**
+Full documentation available at **[tomymaritano.github.io/criterionx](https://tomymaritano.github.io/criterionx/)**
 
 - [Getting Started](https://tomymaritano.github.io/criterionx/guide/getting-started)
 - [Core Concepts](https://tomymaritano.github.io/criterionx/guide/core-concepts)
+- [HTTP Server](https://tomymaritano.github.io/criterionx/guide/server)
 - [API Reference](https://tomymaritano.github.io/criterionx/api/engine)
 - [Examples](https://tomymaritano.github.io/criterionx/examples/currency-risk)
 
