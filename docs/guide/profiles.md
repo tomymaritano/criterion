@@ -54,19 +54,25 @@ const result = engine.run(
 
 ## Using Profile Registry
 
-Register profiles by ID for reuse:
+Create a registry to manage profiles by ID:
 
 ```typescript
-// Register profiles
-engine.registerProfile("risk-decision", "us", usProfile);
-engine.registerProfile("risk-decision", "eu", euProfile);
-engine.registerProfile("risk-decision", "latam", latamProfile);
+import { createProfileRegistry } from "@criterionx/core";
 
-// Use by ID
+// Create a typed registry
+const registry = createProfileRegistry<typeof usProfile>();
+
+// Register profiles by ID
+registry.register("us", usProfile);
+registry.register("eu", euProfile);
+registry.register("latam", latamProfile);
+
+// Use by ID - pass registry as 4th argument
 const result = engine.run(
   decision,
   input,
-  { profile: "us" }  // String ID instead of object
+  { profile: "us" },  // String ID instead of object
+  registry            // Registry with registered profiles
 );
 ```
 
@@ -74,9 +80,10 @@ const result = engine.run(
 
 The engine resolves profiles in this order:
 
-1. If `profile` is an object → use it directly
-2. If `profile` is a string → look up in registry
-3. If not found in registry → return `INVALID_INPUT`
+1. If `profile` is an object → use it directly (inline profile)
+2. If `profile` is a string → look up in the provided registry
+3. If string but no registry provided → return `INVALID_INPUT`
+4. If string but not found in registry → return `INVALID_INPUT`
 
 ## Creating a Registry
 

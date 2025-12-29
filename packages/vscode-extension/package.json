@@ -2,7 +2,7 @@
   "name": "criterionx-vscode",
   "displayName": "Criterion",
   "description": "VS Code extension for Criterion decision engine - syntax highlighting, snippets, and validation",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "publisher": "criterionx",
   "license": "MIT",
   "repository": {
@@ -83,6 +83,9 @@
   "scripts": {
     "build": "tsup src/extension.ts --format cjs --out-dir dist --clean --external vscode",
     "watch": "tsup src/extension.ts --format cjs --out-dir dist --watch --external vscode",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "package": "vsce package",
     "publish": "vsce publish",
     "typecheck": "tsc --noEmit"
@@ -92,6 +95,7 @@
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^2.22.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0"
   }
 }

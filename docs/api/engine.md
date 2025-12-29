@@ -74,38 +74,31 @@ console.log(engine.explain(result));
 //   ✓ rule-1
 ```
 
-### registerProfile()
+## Using Profile Registry
 
-Registers a named profile for later use.
-
-```typescript
-registerProfile<TProfile>(
-  decisionId: string,
-  profileId: string,
-  profile: TProfile
-): void
-```
-
-**Parameters:**
-- `decisionId` - The decision this profile is for
-- `profileId` - Unique identifier for the profile
-- `profile` - The profile data
-
-**Example:**
+To use named profiles instead of inline profiles, create a `ProfileRegistry` and pass it to `run()`:
 
 ```typescript
-engine.registerProfile("currency-risk", "us-standard", {
-  highThreshold: 10000,
-  mediumThreshold: 5000,
-});
+import { Engine, createProfileRegistry } from "@criterionx/core";
 
-// Later, use by ID
+// Create a typed registry
+const registry = createProfileRegistry<{ threshold: number }>();
+
+// Register profiles
+registry.register("conservative", { threshold: 1000 });
+registry.register("aggressive", { threshold: 10000 });
+
+// Use profile by ID (pass registry as 4th argument)
+const engine = new Engine();
 const result = engine.run(
-  currencyRiskDecision,
-  input,
-  { profile: "us-standard" }
+  myDecision,
+  { amount: 5000 },
+  { profile: "conservative" },  // Profile ID
+  registry                      // Registry with profiles
 );
 ```
+
+See [Profile Registry](/guide/profile-registry) for more details.
 
 ## Result Status Codes
 
