@@ -1,0 +1,41 @@
+{
+  "name": "criterion",
+  "version": "0.1.0",
+  "description": "Universal decision engine for business-critical decisions",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "decision-engine",
+    "rules-engine",
+    "business-logic",
+    "deterministic",
+    "explainable"
+  ],
+  "author": "tomymaritano",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0",
+    "zod": "^3.22.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
