@@ -15,6 +15,7 @@ export default defineConfig({
 
     nav: [
       { text: "Guide", link: "/guide/getting-started" },
+      { text: "Playground", link: "/guide/playground" },
       { text: "API", link: "/api/engine" },
       { text: "Examples", link: "/examples/currency-risk" },
       { text: "Architecture", link: "/architecture/manifesto" },
@@ -34,6 +35,7 @@ export default defineConfig({
           items: [
             { text: "What is Criterion?", link: "/guide/what-is-criterion" },
             { text: "Getting Started", link: "/guide/getting-started" },
+            { text: "Playground", link: "/guide/playground" },
             { text: "Migration Guide", link: "/guide/migration" },
             { text: "Core Concepts", link: "/guide/core-concepts" },
           ],
