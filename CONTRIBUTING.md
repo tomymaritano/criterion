@@ -76,6 +76,49 @@ Optional but recommended:
 
 ---
 
+## Commit Message Convention
+
+Criterion uses [Conventional Commits](https://www.conventionalcommits.org/).
+
+### Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+| Type | When to Use |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `test` | Adding or updating tests |
+| `chore` | Maintenance tasks (deps, CI, etc.) |
+| `perf` | Performance improvement |
+
+### Examples
+
+```
+feat(engine): add support for async rule evaluation
+fix(validation): handle null values in input schema
+docs(examples): add healthcare triage example
+refactor(core): simplify rule matching logic
+test(engine): add coverage for NO_MATCH status
+chore(deps): update vitepress to v1.6.4
+```
+
+### Scope (optional)
+
+Common scopes: `engine`, `validation`, `profiles`, `types`, `examples`, `docs`, `ci`
+
+---
+
 ## Pull Request Policy
 
 Every Pull Request must:
