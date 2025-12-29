@@ -41,6 +41,14 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      - name: Run coverage (core only)
+        if: matrix.node-version == '22.x'
+        run: pnpm --filter @criterionx/core test:coverage
+
+      - name: Run E2E tests
+        if: matrix.node-version == '22.x'
+        run: pnpm test:e2e
+
   publish-dry-run:
     runs-on: ubuntu-latest
     needs: test
