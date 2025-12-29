@@ -3,7 +3,6 @@ import type {
   Decision,
   ProfileRegistry,
   Result,
-  ResultMeta,
   RuleTrace,
   RunOptions,
 } from "./types.js";
@@ -202,9 +201,9 @@ export class Engine {
     return lines.join("\n");
   }
 
-  private createErrorResult<TOutput>(
+  private createErrorResult<TInput, TOutput, TProfile>(
     status: "INVALID_INPUT" | "INVALID_OUTPUT" | "NO_MATCH",
-    decision: Decision<unknown, TOutput, unknown>,
+    decision: Decision<TInput, TOutput, TProfile>,
     evaluatedRules: RuleTrace[],
     evaluatedAt: string,
     explanation: string,
