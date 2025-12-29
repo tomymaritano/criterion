@@ -12,6 +12,7 @@ export default defineConfig({
 
   themeConfig: {
     logo: "/criterionxlogo.svg",
+    siteTitle: false,
 
     nav: [
       { text: "Guide", link: "/guide/getting-started" },

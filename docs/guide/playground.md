@@ -4,7 +4,7 @@ Try Criterion directly in your browser without installing anything.
 
 ## Quick Start
 
-<a href="https://stackblitz.com/edit/criterion-playground?file=src%2Findex.ts" target="_blank" rel="noopener noreferrer">
+<a href="https://stackblitz.com/github/tomymaritano/criterionx/tree/main/examples/hello?file=index.ts" target="_blank" rel="noopener noreferrer">
   <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" />
 </a>
 
@@ -105,8 +105,8 @@ scenarios.forEach((input) => {
 });
 ```
 
-<a href="https://stackblitz.com/edit/criterion-risk-example?file=src%2Findex.ts" target="_blank" rel="noopener noreferrer">
-  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open Risk Example" />
+<a href="https://stackblitz.com/github/tomymaritano/criterionx/tree/main/examples/hello?file=index.ts" target="_blank" rel="noopener noreferrer">
+  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" />
 </a>
 
 ---
@@ -228,8 +228,8 @@ console.log("Pricing Result:", result.data);
 console.log("\nExplanation:", engine.explain(result));
 ```
 
-<a href="https://stackblitz.com/edit/criterion-pricing-example?file=src%2Findex.ts" target="_blank" rel="noopener noreferrer">
-  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open Pricing Example" />
+<a href="https://stackblitz.com/github/tomymaritano/criterionx/tree/main/examples/hello?file=index.ts" target="_blank" rel="noopener noreferrer">
+  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" />
 </a>
 
 ---
@@ -238,8 +238,8 @@ console.log("\nExplanation:", engine.explain(result));
 
 Start from scratch with a blank Criterion project:
 
-<a href="https://stackblitz.com/fork/criterion-playground?file=src%2Findex.ts" target="_blank" rel="noopener noreferrer">
-  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Fork Playground" />
+<a href="https://stackblitz.com/github/tomymaritano/criterionx/tree/main/examples/hello?file=index.ts" target="_blank" rel="noopener noreferrer">
+  <img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" />
 </a>
 
 ## Local Development
