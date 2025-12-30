@@ -698,7 +698,7 @@ describe("metrics", () => {
     expect(metricsText).toContain('rule_id="default"');
   });
 
-  it("should indicate metrics in health check", async () => {
+  it("should indicate server info in root endpoint", async () => {
     const server = createServer({
       decisions: [testDecision],
       profiles: { "test-decision": { threshold: 10 } },
@@ -710,7 +710,27 @@ describe("metrics", () => {
     );
 
     const data = await response.json();
-    expect(data.metrics).toBe(true);
+    expect(data.name).toBe("Criterion Server");
+    expect(data.decisions).toBe(1);
+    expect(data.health).toBe("/health");
+  });
+
+  it("should return health check status", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/health")
+    );
+
+    const data = await response.json();
+    expect(data.status).toBe("healthy");
+    expect(data.version).toBeDefined();
+    expect(data.uptime).toBeGreaterThanOrEqual(0);
+    expect(data.checks.decisions.status).toBe("healthy");
+    expect(data.checks.engine.status).toBe("healthy");
   });
 
   it("should provide access to metrics collector programmatically", () => {

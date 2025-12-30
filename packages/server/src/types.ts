@@ -150,3 +150,47 @@ export interface DecisionInfo {
   description?: string;
   meta?: Record<string, unknown>;
 }
+
+/**
+ * Error codes for structured error responses
+ */
+export type ErrorCode =
+  | "DECISION_NOT_FOUND"
+  | "INVALID_JSON"
+  | "MISSING_INPUT"
+  | "MISSING_PROFILE"
+  | "VALIDATION_ERROR"
+  | "EVALUATION_ERROR"
+  | "INTERNAL_ERROR";
+
+/**
+ * Structured error response
+ */
+export interface ErrorResponse {
+  error: {
+    code: ErrorCode;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+  requestId?: string;
+  timestamp: string;
+}
+
+/**
+ * Health check status
+ */
+export type HealthStatus = "healthy" | "degraded" | "unhealthy";
+
+/**
+ * Health check response
+ */
+export interface HealthResponse {
+  status: HealthStatus;
+  version: string;
+  uptime: number;
+  timestamp: string;
+  checks?: Record<string, {
+    status: HealthStatus;
+    message?: string;
+  }>;
+}

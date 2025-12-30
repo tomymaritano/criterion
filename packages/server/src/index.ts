@@ -60,6 +60,12 @@ export type {
   // OpenAPI types
   OpenAPIOptions,
   OpenAPIInfo,
+  // Error types
+  ErrorCode,
+  ErrorResponse,
+  // Health types
+  HealthStatus,
+  HealthResponse,
 } from "./types.js";
 
 // Schema utilities

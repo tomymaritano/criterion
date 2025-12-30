@@ -10,6 +10,9 @@ import type {
   HookContext,
   MetricsOptions,
   OpenAPIOptions,
+  ErrorCode,
+  ErrorResponse,
+  HealthResponse,
 } from "./types.js";
 import { extractDecisionSchema, generateEndpointSchema } from "./schema.js";
 import {
@@ -24,11 +27,34 @@ import {
   type OpenAPISpec,
 } from "./openapi.js";
 
+/** Server version */
+const SERVER_VERSION = "0.3.2";
+
 /**
  * Generate a unique request ID
  */
 function generateRequestId(): string {
   return `req_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+/**
+ * Create a structured error response
+ */
+function createErrorResponse(
+  code: ErrorCode,
+  message: string,
+  requestId?: string,
+  details?: Record<string, unknown>
+): ErrorResponse {
+  return {
+    error: {
+      code,
+      message,
+      ...(details && { details }),
+    },
+    ...(requestId && { requestId }),
+    timestamp: new Date().toISOString(),
+  };
 }
 
 /**
@@ -47,6 +73,7 @@ export class CriterionServer {
   private metricsOptions: MetricsOptions;
   private openApiOptions: OpenAPIOptions;
   private openApiSpec: OpenAPISpec | null = null;
+  private startTime: Date;
 
   constructor(options: ServerOptions) {
     this.app = new Hono();
@@ -56,6 +83,7 @@ export class CriterionServer {
     this.hooks = options.hooks ?? {};
     this.metricsOptions = options.metrics ?? {};
     this.openApiOptions = options.openapi ?? {};
+    this.startTime = new Date();
 
     // Setup metrics if enabled
     if (this.metricsOptions.enabled) {
@@ -92,14 +120,37 @@ export class CriterionServer {
   }
 
   private setupRoutes(): void {
-    // Health check
+    // Root endpoint (basic info)
     this.app.get("/", (c) => {
       return c.json({
         name: "Criterion Server",
-        version: "0.1.0",
+        version: SERVER_VERSION,
         decisions: this.decisions.size,
-        metrics: this.metricsCollector !== null,
+        docs: "/docs",
+        health: "/health",
       });
+    });
+
+    // Health check endpoint
+    this.app.get("/health", (c) => {
+      const uptime = Math.floor((Date.now() - this.startTime.getTime()) / 1000);
+      const response: HealthResponse = {
+        status: "healthy",
+        version: SERVER_VERSION,
+        uptime,
+        timestamp: new Date().toISOString(),
+        checks: {
+          decisions: {
+            status: this.decisions.size > 0 ? "healthy" : "degraded",
+            message: `${this.decisions.size} decision(s) registered`,
+          },
+          engine: {
+            status: "healthy",
+            message: "Engine operational",
+          },
+        },
+      };
+      return c.json(response);
     });
 
     // Metrics endpoint (Prometheus format)
@@ -148,7 +199,10 @@ export class CriterionServer {
       const decision = this.decisions.get(id);
 
       if (!decision) {
-        return c.json({ error: `Decision not found: ${id}` }, 404);
+        return c.json(
+          createErrorResponse("DECISION_NOT_FOUND", `Decision not found: ${id}`),
+          404
+        );
       }
 
       const schema = extractDecisionSchema(decision);
@@ -161,7 +215,10 @@ export class CriterionServer {
       const decision = this.decisions.get(id);
 
       if (!decision) {
-        return c.json({ error: `Decision not found: ${id}` }, 404);
+        return c.json(
+          createErrorResponse("DECISION_NOT_FOUND", `Decision not found: ${id}`),
+          404
+        );
       }
 
       const schema = generateEndpointSchema(decision);
@@ -171,21 +228,31 @@ export class CriterionServer {
     // Evaluate decision
     this.app.post("/decisions/:id", async (c) => {
       const id = c.req.param("id");
+      const requestId = generateRequestId();
       const decision = this.decisions.get(id);
 
       if (!decision) {
-        return c.json({ error: `Decision not found: ${id}` }, 404);
+        return c.json(
+          createErrorResponse("DECISION_NOT_FOUND", `Decision not found: ${id}`, requestId),
+          404
+        );
       }
 
       let body: EvaluateRequest;
       try {
         body = await c.req.json();
       } catch {
-        return c.json({ error: "Invalid JSON body" }, 400);
+        return c.json(
+          createErrorResponse("INVALID_JSON", "Invalid JSON body", requestId),
+          400
+        );
       }
 
       if (body.input === undefined) {
-        return c.json({ error: "Missing 'input' in request body" }, 400);
+        return c.json(
+          createErrorResponse("MISSING_INPUT", "Missing 'input' in request body", requestId),
+          400
+        );
       }
 
       // Resolve profile
@@ -194,9 +261,11 @@ export class CriterionServer {
         profile = this.profiles.get(id);
         if (!profile) {
           return c.json(
-            {
-              error: `No profile provided and no default profile for decision: ${id}`,
-            },
+            createErrorResponse(
+              "MISSING_PROFILE",
+              `No profile provided and no default profile for decision: ${id}`,
+              requestId
+            ),
             400
           );
         }
@@ -207,7 +276,7 @@ export class CriterionServer {
         decisionId: id,
         input: body.input,
         profile,
-        requestId: generateRequestId(),
+        requestId,
         timestamp: new Date(),
       };
 
@@ -271,16 +340,23 @@ export class CriterionServer {
           });
         }
 
+        const err = error instanceof Error ? error : new Error(String(error));
+
         // Call onError hook
         if (this.hooks.onError) {
-          await this.hooks.onError(
-            ctx,
-            error instanceof Error ? error : new Error(String(error))
-          );
+          await this.hooks.onError(ctx, err);
         }
 
-        // Re-throw to let Hono handle the error
-        throw error;
+        // Return structured error response
+        return c.json(
+          createErrorResponse(
+            "EVALUATION_ERROR",
+            err.message,
+            requestId,
+            { decisionId: id }
+          ),
+          500
+        );
       }
     });
 
