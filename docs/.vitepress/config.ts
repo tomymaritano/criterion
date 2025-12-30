@@ -39,6 +39,8 @@ export default defineConfig({
           text: "Introduction",
           items: [
             { text: "What is Criterion?", link: "/guide/what-is-criterion" },
+            { text: "When to Use", link: "/guide/when-to-use" },
+            { text: "When NOT to Use", link: "/guide/when-not-to-use" },
             { text: "Getting Started", link: "/guide/getting-started" },
             { text: "Playground", link: "/guide/playground" },
             { text: "Migration Guide", link: "/guide/migration" },
@@ -58,6 +60,7 @@ export default defineConfig({
           text: "Advanced",
           items: [
             { text: "Profile Registry", link: "/guide/profile-registry" },
+            { text: "Rules: Code vs DB", link: "/guide/rules-code-vs-db" },
             { text: "Explainability", link: "/guide/explainability" },
             { text: "Testing", link: "/guide/testing" },
             { text: "Performance", link: "/guide/performance" },
@@ -102,6 +105,13 @@ export default defineConfig({
         },
       ],
       "/examples/": [
+        {
+          text: "Startup Use Cases",
+          items: [
+            { text: "Feature Flags", link: "/examples/feature-flags" },
+            { text: "Pricing & Limits", link: "/examples/pricing-limits" },
+          ],
+        },
         {
           text: "Integrations",
           items: [
