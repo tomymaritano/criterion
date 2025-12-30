@@ -33,6 +33,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Currency Exposure Risk (finance, with profiles)
 - User Tier Eligibility (non-finance)
 
+## [0.3.2] - 2024-12-30
+
+### Added
+
+#### @criterionx/server
+- **Structured error responses** with `code`, `message`, `requestId`, `timestamp`
+- **Health check endpoint** `/health` with status, version, uptime, and checks
+- New error codes: `DECISION_NOT_FOUND`, `INVALID_JSON`, `MISSING_INPUT`, `MISSING_PROFILE`, `EVALUATION_ERROR`
+- Exported types: `ErrorCode`, `ErrorResponse`, `HealthStatus`, `HealthResponse`
+
 ## [0.3.1] - 2024-12-29
 
 ### Added

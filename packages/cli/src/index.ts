@@ -10,7 +10,7 @@ const program = new Command();
 program
   .name("criterion")
   .description("CLI for scaffolding and managing Criterion decisions")
-  .version("0.3.1");
+  .version("0.3.2");
 
 // criterion init
 program
