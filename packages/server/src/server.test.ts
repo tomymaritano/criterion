@@ -753,3 +753,293 @@ describe("metrics", () => {
     expect(server.metrics).toBeNull();
   });
 });
+
+describe("logging", () => {
+  it("should not log when logging is disabled", async () => {
+    const logger = vi.fn();
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      logging: { enabled: false, logger },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 50 } }),
+      })
+    );
+
+    expect(logger).not.toHaveBeenCalled();
+  });
+
+  it("should call logger with correct entry on successful evaluation", async () => {
+    const logger = vi.fn();
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      logging: { enabled: true, logger },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 50, flag: true, text: "test" } }),
+      })
+    );
+
+    expect(logger).toHaveBeenCalledTimes(1);
+    const entry = logger.mock.calls[0][0];
+    expect(entry.requestId).toMatch(/^req_/);
+    expect(entry.decisionId).toBe("test-decision");
+    expect(entry.status).toBe("OK");
+    expect(entry.durationMs).toBeGreaterThanOrEqual(0);
+    expect(entry.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it("should log ERROR status when hook throws", async () => {
+    const logger = vi.fn();
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+      logging: { enabled: true, logger },
+      hooks: {
+        afterEvaluate: () => {
+          throw new Error("Hook error");
+        },
+      },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 50, flag: true, text: "test" } }),
+      })
+    );
+
+    expect(logger).toHaveBeenCalledTimes(1);
+    const entry = logger.mock.calls[0][0];
+    expect(entry.status).toBe("ERROR");
+    expect(entry.decisionId).toBe("test-decision");
+  });
+
+  it("should log NO_MATCH status when no rules match", async () => {
+    const noMatchDecision = defineDecision({
+      id: "no-match-decision",
+      version: "1.0.0",
+      inputSchema: z.object({ value: z.number() }),
+      outputSchema: z.object({ result: z.string() }),
+      profileSchema: z.object({ threshold: z.number() }),
+      rules: [
+        {
+          id: "never-matches",
+          when: () => false,
+          emit: () => ({ result: "never" }),
+        },
+      ],
+    });
+
+    const logger = vi.fn();
+    const server = createServer({
+      decisions: [noMatchDecision],
+      profiles: { "no-match-decision": { threshold: 10 } },
+      logging: { enabled: true, logger },
+    });
+
+    await server.handler.request(
+      new Request("http://localhost/decisions/no-match-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 50 } }),
+      })
+    );
+
+    expect(logger).toHaveBeenCalledTimes(1);
+    const entry = logger.mock.calls[0][0];
+    expect(entry.status).toBe("NO_MATCH");
+  });
+});
+
+describe("profile versioning", () => {
+  it("should resolve versioned profile with profileVersion in request", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: {
+        "test-decision": { threshold: 10 },
+        "test-decision:v2": { threshold: 100 },
+      },
+    });
+
+    // With default profile (threshold: 10), value 50 is ABOVE
+    const defaultResponse = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 50, flag: true, text: "test" } }),
+      })
+    );
+    const defaultResult = await defaultResponse.json();
+    expect(defaultResult.data.result).toBe("ABOVE");
+
+    // With v2 profile (threshold: 100), value 50 is BELOW
+    const v2Response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: { value: 50, flag: true, text: "test" },
+          profileVersion: "v2",
+        }),
+      })
+    );
+    const v2Result = await v2Response.json();
+    expect(v2Result.data.result).toBe("BELOW");
+  });
+
+  it("should fallback to default when profileVersion not provided", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: {
+        "test-decision": { threshold: 10 },
+        "test-decision:alternative": { threshold: 200 },
+      },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: { value: 50, flag: true, text: "test" } }),
+      })
+    );
+
+    const result = await response.json();
+    // Default threshold is 10, so 50 > 10 = ABOVE
+    expect(result.data.result).toBe("ABOVE");
+  });
+
+  it("should return error when profileVersion not found", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: {
+        "test-decision": { threshold: 10 },
+      },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: { value: 50, flag: true, text: "test" },
+          profileVersion: "nonexistent",
+        }),
+      })
+    );
+
+    expect(response.status).toBe(400);
+    const result = await response.json();
+    expect(result.error.code).toBe("MISSING_PROFILE");
+    expect(result.error.message).toContain("nonexistent");
+  });
+
+  it("should list profile versions for a decision", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: {
+        "test-decision": { threshold: 10 },
+        "test-decision:v1": { threshold: 50 },
+        "test-decision:conservative": { threshold: 150 },
+      },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision/profiles")
+    );
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.decisionId).toBe("test-decision");
+    expect(result.versions).toHaveLength(3);
+
+    // Check default version
+    const defaultVersion = result.versions.find(
+      (v: { version: string | null }) => v.version === null
+    );
+    expect(defaultVersion).toBeDefined();
+    expect(defaultVersion.isDefault).toBe(true);
+
+    // Check named versions
+    const v1 = result.versions.find(
+      (v: { version: string | null }) => v.version === "v1"
+    );
+    expect(v1).toBeDefined();
+    expect(v1.isDefault).toBe(false);
+
+    const conservative = result.versions.find(
+      (v: { version: string | null }) => v.version === "conservative"
+    );
+    expect(conservative).toBeDefined();
+  });
+
+  it("should return empty versions array when no profiles configured", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: {},
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision/profiles")
+    );
+
+    expect(response.status).toBe(200);
+    const result = await response.json();
+    expect(result.decisionId).toBe("test-decision");
+    expect(result.versions).toHaveLength(0);
+  });
+
+  it("should prefer inline profile over profileVersion", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: {
+        "test-decision": { threshold: 10 },
+        "test-decision:high": { threshold: 200 },
+      },
+    });
+
+    // Even with profileVersion: "high", inline profile should win
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/test-decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: { value: 50, flag: true, text: "test" },
+          profileVersion: "high",
+          profile: { threshold: 10 }, // inline override
+        }),
+      })
+    );
+
+    const result = await response.json();
+    // With inline threshold: 10, value 50 > 10 = ABOVE
+    expect(result.data.result).toBe("ABOVE");
+  });
+
+  it("should return 404 when listing profiles for nonexistent decision", async () => {
+    const server = createServer({
+      decisions: [testDecision],
+      profiles: { "test-decision": { threshold: 10 } },
+    });
+
+    const response = await server.handler.request(
+      new Request("http://localhost/decisions/nonexistent/profiles")
+    );
+
+    expect(response.status).toBe(404);
+    const result = await response.json();
+    expect(result.error.code).toBe("DECISION_NOT_FOUND");
+  });
+});

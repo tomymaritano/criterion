@@ -10,9 +10,12 @@ import type {
   HookContext,
   MetricsOptions,
   OpenAPIOptions,
+  LoggingOptions,
+  LogEntry,
   ErrorCode,
   ErrorResponse,
   HealthResponse,
+  ProfileVersionInfo,
 } from "./types.js";
 import { extractDecisionSchema, generateEndpointSchema } from "./schema.js";
 import {
@@ -26,6 +29,7 @@ import {
   generateSwaggerUIHtml,
   type OpenAPISpec,
 } from "./openapi.js";
+import { createRateLimitMiddleware } from "./rate-limit.js";
 
 /** Server version */
 const SERVER_VERSION = "0.3.2";
@@ -73,6 +77,7 @@ export class CriterionServer {
   private metricsOptions: MetricsOptions;
   private openApiOptions: OpenAPIOptions;
   private openApiSpec: OpenAPISpec | null = null;
+  private loggingOptions: LoggingOptions | null = null;
   private startTime: Date;
 
   constructor(options: ServerOptions) {
@@ -88,6 +93,11 @@ export class CriterionServer {
     // Setup metrics if enabled
     if (this.metricsOptions.enabled) {
       this.metricsCollector = new MetricsCollector(this.metricsOptions);
+    }
+
+    // Setup logging if enabled
+    if (options.logging?.enabled) {
+      this.loggingOptions = options.logging;
     }
 
     // Register decisions
@@ -113,6 +123,11 @@ export class CriterionServer {
     // Setup middleware
     if (options.cors !== false) {
       this.app.use("*", cors());
+    }
+
+    // Rate limiting
+    if (options.rateLimit?.enabled) {
+      this.app.use("*", createRateLimitMiddleware(options.rateLimit));
     }
 
     // Setup routes
@@ -255,19 +270,36 @@ export class CriterionServer {
         );
       }
 
-      // Resolve profile
+      // Resolve profile (priority: inline > version > default)
       let profile = body.profile;
       if (!profile) {
-        profile = this.profiles.get(id);
-        if (!profile) {
-          return c.json(
-            createErrorResponse(
-              "MISSING_PROFILE",
-              `No profile provided and no default profile for decision: ${id}`,
-              requestId
-            ),
-            400
-          );
+        if (body.profileVersion) {
+          // Look for versioned profile
+          const versionedKey = `${id}:${body.profileVersion}`;
+          profile = this.profiles.get(versionedKey);
+          if (!profile) {
+            return c.json(
+              createErrorResponse(
+                "MISSING_PROFILE",
+                `Profile version not found: ${body.profileVersion} for decision: ${id}`,
+                requestId
+              ),
+              400
+            );
+          }
+        } else {
+          // Look for default profile
+          profile = this.profiles.get(id);
+          if (!profile) {
+            return c.json(
+              createErrorResponse(
+                "MISSING_PROFILE",
+                `No profile provided and no default profile for decision: ${id}`,
+                requestId
+              ),
+              400
+            );
+          }
         }
       }
 
@@ -328,6 +360,18 @@ export class CriterionServer {
           await this.hooks.afterEvaluate(ctx, result);
         }
 
+        // Log request
+        if (this.loggingOptions) {
+          const entry: LogEntry = {
+            requestId,
+            decisionId: id,
+            status: result.status,
+            durationMs: performance.now() - startTime,
+            timestamp: new Date().toISOString(),
+          };
+          this.loggingOptions.logger(entry);
+        }
+
         // Return result with appropriate status code
         const statusCode = result.status === "OK" ? 200 : 400;
         return c.json(result, statusCode);
@@ -347,6 +391,18 @@ export class CriterionServer {
           await this.hooks.onError(ctx, err);
         }
 
+        // Log error request
+        if (this.loggingOptions) {
+          const entry: LogEntry = {
+            requestId,
+            decisionId: id,
+            status: "ERROR",
+            durationMs: performance.now() - startTime,
+            timestamp: new Date().toISOString(),
+          };
+          this.loggingOptions.logger(entry);
+        }
+
         // Return structured error response
         return c.json(
           createErrorResponse(
@@ -360,6 +416,22 @@ export class CriterionServer {
       }
     });
 
+    // List profile versions for a decision
+    this.app.get("/decisions/:id/profiles", (c) => {
+      const id = c.req.param("id");
+      const decision = this.decisions.get(id);
+
+      if (!decision) {
+        return c.json(
+          createErrorResponse("DECISION_NOT_FOUND", `Decision not found: ${id}`),
+          404
+        );
+      }
+
+      const versions = this.getProfileVersions(id);
+      return c.json({ decisionId: id, versions });
+    });
+
     // Interactive docs UI
     this.app.get("/docs", (c) => {
       const decisions = Array.from(this.decisions.values()).map((d) => ({
@@ -371,6 +443,29 @@ export class CriterionServer {
       const html = this.generateDocsHtml(decisions);
       return c.html(html);
     });
+  }
+
+  /**
+   * Get available profile versions for a decision
+   */
+  private getProfileVersions(decisionId: string): ProfileVersionInfo[] {
+    const versions: ProfileVersionInfo[] = [];
+    const prefix = `${decisionId}:`;
+
+    // Check for default (no version)
+    if (this.profiles.has(decisionId)) {
+      versions.push({ version: null, isDefault: true });
+    }
+
+    // Check for versioned profiles
+    for (const key of this.profiles.keys()) {
+      if (key.startsWith(prefix)) {
+        const version = key.slice(prefix.length);
+        versions.push({ version, isDefault: false });
+      }
+    }
+
+    return versions;
   }
 
   private generateDocsHtml(

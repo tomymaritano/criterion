@@ -74,6 +74,80 @@ export interface MetricsOptions {
 }
 
 /**
+ * Log entry emitted for each evaluation request
+ */
+export interface LogEntry {
+  /** Unique request identifier */
+  requestId: string;
+  /** ID of the decision that was evaluated */
+  decisionId: string;
+  /** Result status or ERROR */
+  status: "OK" | "NO_MATCH" | "INVALID_INPUT" | "INVALID_OUTPUT" | "ERROR";
+  /** Duration of the evaluation in milliseconds */
+  durationMs: number;
+  /** ISO timestamp when the request completed */
+  timestamp: string;
+}
+
+/**
+ * Logger function type - user provides their own implementation
+ */
+export type LoggerFn = (entry: LogEntry) => void;
+
+/**
+ * Logging configuration options
+ */
+export interface LoggingOptions {
+  /** Enable request logging (default: false) */
+  enabled?: boolean;
+  /** Custom logger function - receives structured log entries */
+  logger: LoggerFn;
+}
+
+/**
+ * Rate limit info returned by store
+ */
+export interface RateLimitInfo {
+  /** Current request count in window */
+  count: number;
+  /** Unix timestamp (ms) when window resets */
+  resetTime: number;
+}
+
+/**
+ * Rate limit store interface for custom implementations
+ *
+ * Implement this interface to use external stores like Redis
+ * for distributed rate limiting.
+ */
+export interface RateLimitStore {
+  /** Increment counter for key and return current info */
+  increment(key: string): Promise<RateLimitInfo>;
+  /** Reset counter for key */
+  reset(key: string): Promise<void>;
+}
+
+/**
+ * Rate limiting configuration options
+ */
+export interface RateLimitOptions {
+  /** Enable rate limiting (default: false) */
+  enabled?: boolean;
+  /** Time window in milliseconds (default: 60000 = 1 minute) */
+  windowMs?: number;
+  /** Maximum requests per window (default: 100) */
+  max?: number;
+  /** Custom key generator function (default: client IP) */
+  keyGenerator?: (c: import("hono").Context) => string;
+  /** Custom handler for rate limit exceeded (default: 429 JSON response) */
+  handler?: (c: import("hono").Context) => Response;
+  /** Skip rate limiting for certain requests (default: skip /health, /metrics) */
+  skip?: (c: import("hono").Context) => boolean;
+  /** Custom store for distributed rate limiting (default: in-memory) */
+  store?: RateLimitStore;
+}
+
+/**
  * OpenAPI info object
  */
 export interface OpenAPIInfo {
@@ -129,6 +203,10 @@ export interface ServerOptions {
   metrics?: MetricsOptions;
   /** OpenAPI spec generation configuration */
   openapi?: OpenAPIOptions;
+  /** Request logging configuration */
+  logging?: LoggingOptions;
+  /** Rate limiting configuration */
+  rateLimit?: RateLimitOptions;
 }
 
 /**
@@ -137,8 +215,30 @@ export interface ServerOptions {
 export interface EvaluateRequest {
   /** Input data for the decision */
   input: unknown;
-  /** Profile to use (overrides default) */
+  /** Profile to use (overrides default and profileVersion) */
   profile?: unknown;
+  /** Profile version to use (e.g., "v1", "conservative") */
+  profileVersion?: string;
+}
+
+/**
+ * Profile version info for listing
+ */
+export interface ProfileVersionInfo {
+  /** Version identifier (null for default) */
+  version: string | null;
+  /** Whether this is the default profile */
+  isDefault: boolean;
+}
+
+/**
+ * Response for listing profile versions
+ */
+export interface ProfileListResponse {
+  /** Decision ID */
+  decisionId: string;
+  /** Available profile versions */
+  versions: ProfileVersionInfo[];
 }
 
 /**
@@ -161,7 +261,8 @@ export type ErrorCode =
   | "MISSING_PROFILE"
   | "VALIDATION_ERROR"
   | "EVALUATION_ERROR"
-  | "INTERNAL_ERROR";
+  | "INTERNAL_ERROR"
+  | "RATE_LIMIT_EXCEEDED";
 
 /**
  * Structured error response
