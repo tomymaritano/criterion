@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/generators",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Code generators for Criterion decision engine",
   "type": "module",
   "main": "dist/index.js",

@@ -2,6 +2,47 @@
 
 All notable changes to Criterion are documented here.
 
+## [0.4.0] - 2024-12-30
+
+### Added
+
+#### New Packages
+- **@criterionx/react** — React hooks for decision evaluation
+  - `CriterionProvider` context for engine and profiles
+  - `useDecision()` hook with loading states and error handling
+  - `useCriterion()`, `useEngine()`, `useProfileRegistry()` utilities
+
+- **@criterionx/express** — Express and Fastify middleware
+  - `createDecisionMiddleware()` for single decision endpoints
+  - `createDecisionRouter()` for multiple decisions
+  - `criterionPlugin` for Fastify integration
+
+- **@criterionx/trpc** — tRPC integration with full type safety
+  - `createDecisionProcedure()` for type-safe procedures
+  - `createDecisionRouter()` for multiple decisions
+  - `createDecisionCaller()` for server-side evaluation
+
+- **@criterionx/opentelemetry** — Observability instrumentation
+  - `createTracedEngine()` for distributed tracing
+  - `createMetricsRecorder()` for Prometheus-style metrics
+  - Span attributes for decision ID, version, matched rule
+
+- **@criterionx/generators** — Code generation from specs
+  - `parseDecisionSpec()` for runtime parsing of declarative specs
+  - `generateDecisionCode()` for TypeScript code generation
+  - Support for all comparison operators and expressions
+
+#### Server Enhancements
+- **Rate Limiting** — Configurable rate limiting with custom store support
+  - In-memory store included, Redis-compatible interface
+  - Per-route or global configuration
+- **Request Logging** — Structured logging for all requests
+
+### Documentation
+- Added API reference for all new packages
+- Added integration examples (Next.js, Express REST API)
+- Updated navigation with Integrations and Tools sections
+
 ## [0.3.0] - 2024-12-29
 
 ### Added
