@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/mcp",
-  "version": "0.4.0",
+  "version": "0.3.4",
   "description": "MCP server for Criterion decisions - expose business rules as LLM tools",
   "type": "module",
   "main": "dist/index.js",
