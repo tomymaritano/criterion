@@ -1,6 +1,6 @@
 {
   "name": "criterionx",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "description": "Universal decision engine for business-critical decisions",
   "type": "module",

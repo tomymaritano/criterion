@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/devtools",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Development tools for debugging Criterion decisions",
   "type": "module",
   "main": "dist/index.js",
