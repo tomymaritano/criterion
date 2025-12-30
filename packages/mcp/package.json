@@ -1,0 +1,66 @@
+{
+  "name": "@criterionx/mcp",
+  "version": "0.3.2",
+  "description": "MCP server for Criterion decisions - expose business rules as LLM tools",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "criterion",
+    "decision-engine",
+    "mcp",
+    "model-context-protocol",
+    "llm",
+    "ai-tools",
+    "business-rules"
+  ],
+  "author": {
+    "name": "Tomas Maritano",
+    "url": "https://github.com/tomymaritano"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/tomymaritano/criterionx/issues"
+  },
+  "homepage": "https://github.com/tomymaritano/criterionx#readme",
+  "dependencies": {
+    "@criterionx/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.16",
+    "zod": "^3.22.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
