@@ -21,7 +21,7 @@ export default defineConfig({
       { text: "Examples", link: "/examples/currency-risk" },
       { text: "Architecture", link: "/architecture/manifesto" },
       {
-        text: "0.4.0",
+        text: "0.3.4",
         items: [
           { text: "Changelog", link: "/changelog" },
           { text: "@criterionx/core", link: "https://www.npmjs.com/package/@criterionx/core" },

@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/opentelemetry",
-  "version": "0.4.0",
+  "version": "0.3.4",
   "description": "OpenTelemetry instrumentation for Criterion decision engine",
   "type": "module",
   "main": "dist/index.js",

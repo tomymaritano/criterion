@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/express",
-  "version": "0.4.0",
+  "version": "0.3.4",
   "description": "Express and Fastify middleware for Criterion decision engine",
   "type": "module",
   "main": "dist/index.js",
