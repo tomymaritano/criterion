@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/trpc",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "tRPC integration for Criterion decision engine",
   "type": "module",
   "main": "dist/index.js",

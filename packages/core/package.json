@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/core",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Universal decision engine for business-critical decisions",
   "type": "module",
   "main": "dist/index.js",

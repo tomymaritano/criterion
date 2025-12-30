@@ -2,7 +2,7 @@
 
 All notable changes to Criterion are documented here.
 
-## [0.3.4] - 2024-12-30
+## [0.3.5] - 2024-12-30
 
 ### Added
 
