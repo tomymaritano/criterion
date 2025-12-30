@@ -9,7 +9,7 @@ import {
 import type { McpServerOptions, DecisionListItem } from "./types.js";
 
 /** Package version */
-const PACKAGE_VERSION = "0.3.2";
+const PACKAGE_VERSION = "0.3.3";
 
 /**
  * Criterion MCP Server
