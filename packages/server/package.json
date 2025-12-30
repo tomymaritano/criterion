@@ -1,6 +1,6 @@
 {
   "name": "@criterionx/server",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "HTTP server for Criterion decisions with auto-generated docs",
   "type": "module",
   "main": "dist/index.js",
