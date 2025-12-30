@@ -107,6 +107,13 @@ export default defineConfig({
           items: [
             { text: "Next.js Full-Stack", link: "/examples/nextjs-integration" },
             { text: "Express REST API", link: "/examples/express-api" },
+            { text: "tRPC Full-Stack", link: "/examples/trpc-fullstack" },
+          ],
+        },
+        {
+          text: "Operations",
+          items: [
+            { text: "Observability", link: "/examples/observability" },
           ],
         },
         {
