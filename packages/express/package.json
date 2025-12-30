@@ -1,0 +1,71 @@
+{
+  "name": "@criterionx/express",
+  "version": "0.3.3",
+  "description": "Express and Fastify middleware for Criterion decision engine",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./express": {
+      "types": "./dist/express.d.ts",
+      "import": "./dist/express.js"
+    },
+    "./fastify": {
+      "types": "./dist/fastify.d.ts",
+      "import": "./dist/fastify.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/express.ts src/fastify.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@criterionx/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0",
+    "fastify": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "zod": "^3.24.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@types/supertest": "^6.0.0",
+    "express": "^5.0.0",
+    "fastify": "^5.0.0",
+    "supertest": "^7.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0"
+  },
+  "keywords": [
+    "criterion",
+    "decision",
+    "rules",
+    "express",
+    "fastify",
+    "middleware"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/express"
+  }
+}

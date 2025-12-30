@@ -60,12 +60,23 @@ export type {
   // OpenAPI types
   OpenAPIOptions,
   OpenAPIInfo,
+  // Logging types
+  LogEntry,
+  LoggerFn,
+  LoggingOptions,
   // Error types
   ErrorCode,
   ErrorResponse,
   // Health types
   HealthStatus,
   HealthResponse,
+  // Profile versioning types
+  ProfileVersionInfo,
+  ProfileListResponse,
+  // Rate limiting types
+  RateLimitInfo,
+  RateLimitStore,
+  RateLimitOptions,
 } from "./types.js";
 
 // Schema utilities
@@ -82,6 +93,9 @@ export {
 // OpenAPI
 export { generateOpenAPISpec, generateSwaggerUIHtml } from "./openapi.js";
 export type { OpenAPISpec } from "./openapi.js";
+
+// Rate limiting
+export { createRateLimitMiddleware, InMemoryRateLimitStore } from "./rate-limit.js";
 
 // Server
 export { CriterionServer, createServer } from "./server.js";
