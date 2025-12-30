@@ -9,6 +9,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/@criterionx/core"><img src="https://img.shields.io/npm/v/@criterionx/core.svg?label=@criterionx/core" alt="core version"></a>
   <a href="https://www.npmjs.com/package/@criterionx/server"><img src="https://img.shields.io/npm/v/@criterionx/server.svg?label=@criterionx/server" alt="server version"></a>
+  <a href="https://www.npmjs.com/package/@criterionx/react"><img src="https://img.shields.io/npm/v/@criterionx/react.svg?label=@criterionx/react" alt="react version"></a>
   <a href="https://github.com/tomymaritano/criterionx/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@criterionx/core.svg" alt="license"></a>
   <a href="https://tomymaritano.github.io/criterionx/"><img src="https://img.shields.io/badge/docs-vitepress-brightgreen.svg" alt="docs"></a>
 </p>
@@ -29,10 +30,31 @@ Every decision returns not just a result, but a complete explanation of *why* th
 
 ## Packages
 
+### Core
+
 | Package | Description |
 |---------|-------------|
 | [@criterionx/core](./packages/core) | Pure decision engine — no I/O, no side effects |
-| [@criterionx/server](./packages/server) | HTTP server with auto-generated docs |
+| [@criterionx/server](./packages/server) | HTTP server with auto-generated docs, rate limiting |
+
+### Integrations
+
+| Package | Description |
+|---------|-------------|
+| [@criterionx/react](./packages/react) | React hooks (`useDecision`, `CriterionProvider`) |
+| [@criterionx/express](./packages/express) | Express & Fastify middleware |
+| [@criterionx/trpc](./packages/trpc) | tRPC procedures with full type safety |
+
+### Tools
+
+| Package | Description |
+|---------|-------------|
+| [@criterionx/opentelemetry](./packages/opentelemetry) | Tracing & metrics instrumentation |
+| [@criterionx/generators](./packages/generators) | Generate decisions from declarative specs |
+| [@criterionx/testing](./packages/testing) | Test utilities and mocks |
+| [@criterionx/devtools](./packages/devtools) | Debug and inspect decisions |
+| [@criterionx/cli](./packages/cli) | Command-line interface |
+| [@criterionx/mcp](./packages/mcp) | Model Context Protocol server for LLMs |
 
 ## Installation
 
@@ -41,7 +63,16 @@ Every decision returns not just a result, but a complete explanation of *why* th
 npm install @criterionx/core zod
 
 # With HTTP server
-npm install @criterionx/core @criterionx/server zod
+npm install @criterionx/server zod
+
+# React integration
+npm install @criterionx/react @criterionx/core
+
+# Express/Fastify middleware
+npm install @criterionx/express @criterionx/core
+
+# tRPC integration
+npm install @criterionx/trpc @criterionx/core @trpc/server
 ```
 
 ## Quick Start
@@ -89,29 +120,63 @@ console.log(engine.explain(result));
 // Reason: Amount 15000 > 10000
 ```
 
+### Using React Hooks
+
+```tsx
+import { CriterionProvider, useDecision } from "@criterionx/react";
+
+function App() {
+  return (
+    <CriterionProvider
+      decisions={[riskDecision]}
+      profiles={{ "transaction-risk": { threshold: 10000 } }}
+    >
+      <RiskChecker />
+    </CriterionProvider>
+  );
+}
+
+function RiskChecker() {
+  const { result, evaluate } = useDecision("transaction-risk");
+
+  return (
+    <button onClick={() => evaluate({ amount: 15000 })}>
+      Check Risk: {result?.data?.risk ?? "—"}
+    </button>
+  );
+}
+```
+
+### Using Express Middleware
+
+```typescript
+import express from "express";
+import { createDecisionRouter } from "@criterionx/express";
+
+const app = express();
+app.use(express.json());
+app.use("/api/decisions", createDecisionRouter({
+  decisions: [riskDecision],
+  profiles: { "transaction-risk": { threshold: 10000 } },
+}));
+
+app.listen(3000);
+// POST /api/decisions/transaction-risk
+```
+
 ### Using the HTTP Server
 
 ```typescript
 import { createServer } from "@criterionx/server";
-import { riskDecision } from "./decisions";
 
 const server = createServer({
   decisions: [riskDecision],
-  profiles: {
-    "transaction-risk": { threshold: 10000 },
-  },
+  profiles: { "transaction-risk": { threshold: 10000 } },
 });
 
 server.listen(3000);
 // Server running at http://localhost:3000
 // Docs at http://localhost:3000/docs
-```
-
-```bash
-# Evaluate a decision via HTTP
-curl -X POST http://localhost:3000/decisions/transaction-risk \
-  -H "Content-Type: application/json" \
-  -d '{"input": {"amount": 15000}}'
 ```
 
 ## Features
@@ -122,7 +187,8 @@ curl -X POST http://localhost:3000/decisions/transaction-risk \
 - **Profile-Driven** — Parameterize decisions by region, tier, or environment
 - **Zero Side Effects** — No I/O, no database, no external calls
 - **Testable by Design** — Pure functions are trivial to test
-- **HTTP Ready** — Expose decisions as REST endpoints with auto-generated docs
+- **Framework Agnostic** — Works with React, Express, Fastify, tRPC, and more
+- **Observable** — OpenTelemetry integration for tracing and metrics
 
 ## Documentation
 
@@ -132,6 +198,8 @@ Full documentation available at **[tomymaritano.github.io/criterionx](https://to
 - [Core Concepts](https://tomymaritano.github.io/criterionx/guide/core-concepts)
 - [HTTP Server](https://tomymaritano.github.io/criterionx/guide/server)
 - [API Reference](https://tomymaritano.github.io/criterionx/api/engine)
+- [React Integration](https://tomymaritano.github.io/criterionx/api/react)
+- [Express/Fastify](https://tomymaritano.github.io/criterionx/api/express)
 - [Examples](https://tomymaritano.github.io/criterionx/examples/currency-risk)
 
 ## Core Concepts
