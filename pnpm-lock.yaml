@@ -120,6 +120,9 @@ importers:
       vitest:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
 
   packages/generators:
     dependencies:
@@ -229,6 +232,9 @@ importers:
       vitest:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
 
   packages/server:
     dependencies:
