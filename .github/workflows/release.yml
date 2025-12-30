@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -23,7 +23,7 @@ jobs:
           version: 9
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
@@ -38,6 +38,7 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      # Core packages (publish first as others depend on them)
       - name: Publish @criterionx/core
         run: pnpm --filter @criterionx/core publish --access public --provenance --no-git-checks
         env:
@@ -45,5 +46,53 @@ jobs:
 
       - name: Publish @criterionx/server
         run: pnpm --filter @criterionx/server publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Integration packages
+      - name: Publish @criterionx/react
+        run: pnpm --filter @criterionx/react publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @criterionx/express
+        run: pnpm --filter @criterionx/express publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @criterionx/trpc
+        run: pnpm --filter @criterionx/trpc publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Tool packages
+      - name: Publish @criterionx/opentelemetry
+        run: pnpm --filter @criterionx/opentelemetry publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @criterionx/generators
+        run: pnpm --filter @criterionx/generators publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Utility packages
+      - name: Publish @criterionx/testing
+        run: pnpm --filter @criterionx/testing publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @criterionx/devtools
+        run: pnpm --filter @criterionx/devtools publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @criterionx/cli
+        run: pnpm --filter @criterionx/cli publish --access public --provenance --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @criterionx/mcp
+        run: pnpm --filter @criterionx/mcp publish --access public --provenance --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
