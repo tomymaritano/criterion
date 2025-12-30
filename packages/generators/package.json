@@ -1,0 +1,46 @@
+{
+  "name": "@criterionx/generators",
+  "version": "0.3.3",
+  "description": "Code generators for Criterion decision engine",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@criterionx/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0",
+    "zod": "^3.23.0"
+  },
+  "keywords": [
+    "criterion",
+    "generator",
+    "codegen",
+    "decision",
+    "rules",
+    "typescript"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomymaritano/criterionx.git",
+    "directory": "packages/generators"
+  }
+}
