@@ -21,11 +21,14 @@ export default defineConfig({
       { text: "Examples", link: "/examples/currency-risk" },
       { text: "Architecture", link: "/architecture/manifesto" },
       {
-        text: "0.3.0",
+        text: "0.4.0",
         items: [
           { text: "Changelog", link: "/changelog" },
           { text: "@criterionx/core", link: "https://www.npmjs.com/package/@criterionx/core" },
           { text: "@criterionx/server", link: "https://www.npmjs.com/package/@criterionx/server" },
+          { text: "@criterionx/react", link: "https://www.npmjs.com/package/@criterionx/react" },
+          { text: "@criterionx/express", link: "https://www.npmjs.com/package/@criterionx/express" },
+          { text: "@criterionx/trpc", link: "https://www.npmjs.com/package/@criterionx/trpc" },
         ],
       },
     ],
@@ -82,8 +85,30 @@ export default defineConfig({
             { text: "Server API", link: "/api/server" },
           ],
         },
+        {
+          text: "Integrations",
+          items: [
+            { text: "React", link: "/api/react" },
+            { text: "Express / Fastify", link: "/api/express" },
+            { text: "tRPC", link: "/api/trpc" },
+          ],
+        },
+        {
+          text: "Tools",
+          items: [
+            { text: "OpenTelemetry", link: "/api/opentelemetry" },
+            { text: "Generators", link: "/api/generators" },
+          ],
+        },
       ],
       "/examples/": [
+        {
+          text: "Integrations",
+          items: [
+            { text: "Next.js Full-Stack", link: "/examples/nextjs-integration" },
+            { text: "Express REST API", link: "/examples/express-api" },
+          ],
+        },
         {
           text: "Finance",
           items: [
