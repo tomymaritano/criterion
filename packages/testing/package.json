@@ -41,7 +41,7 @@
   "homepage": "https://github.com/tomymaritano/criterionx#readme",
   "dependencies": {
     "@criterionx/core": "workspace:*",
-    "fast-check": "^3.23.0"
+    "fast-check": "^4.5.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
