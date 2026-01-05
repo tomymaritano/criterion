@@ -47,7 +47,7 @@ importers:
     dependencies:
       zod-to-json-schema:
         specifier: ^3.22.0
-        version: 3.25.1(zod@3.25.76)
+        version: 3.25.1(zod@4.3.5)
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^4.0.0
@@ -62,8 +62,8 @@ importers:
         specifier: ^4.0.16
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.22.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/devtools:
     dependencies:
@@ -84,8 +84,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/express:
     dependencies:
@@ -121,8 +121,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/generators:
     dependencies:
@@ -143,8 +143,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/mcp:
     dependencies:
@@ -153,7 +153,7 @@ importers:
         version: link:../core
       '@modelcontextprotocol/sdk':
         specifier: ^1.0.0
-        version: 1.25.1(hono@4.11.3)(zod@3.25.76)
+        version: 1.25.1(hono@4.11.3)(zod@4.3.5)
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
@@ -168,8 +168,8 @@ importers:
         specifier: ^4.0.16
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.22.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/opentelemetry:
     dependencies:
@@ -196,8 +196,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/react:
     dependencies:
@@ -233,8 +233,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/server:
     dependencies:
@@ -249,7 +249,7 @@ importers:
         version: 4.11.3
       zod-to-json-schema:
         specifier: ^3.24.0
-        version: 3.25.1(zod@3.25.76)
+        version: 3.25.1(zod@4.3.5)
     devDependencies:
       '@types/node':
         specifier: ^25.0.3
@@ -267,8 +267,8 @@ importers:
         specifier: ^4.0.16
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.22.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/testing:
     dependencies:
@@ -292,8 +292,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/trpc:
     dependencies:
@@ -317,8 +317,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0)
       zod:
-        specifier: ^3.23.0
-        version: 3.25.76
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/vscode-extension:
     devDependencies:
@@ -3074,8 +3074,8 @@ packages:
     peerDependencies:
       zod: ^3.25 || ^4
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.3.5:
+    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -3549,7 +3549,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@modelcontextprotocol/sdk@1.25.1(hono@4.11.3)(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.25.1(hono@4.11.3)(zod@4.3.5)':
     dependencies:
       '@hono/node-server': 1.19.7(hono@4.11.3)
       ajv: 8.17.1
@@ -3565,8 +3565,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.1(zod@3.25.76)
+      zod: 4.3.5
+      zod-to-json-schema: 3.25.1(zod@4.3.5)
     transitivePeerDependencies:
       - hono
       - supports-color
@@ -3873,6 +3873,14 @@ snapshots:
       '@vitest/utils': 4.0.16
       chai: 6.2.2
       tinyrainbow: 3.0.3
+
+  '@vitest/mocker@4.0.16(vite@7.3.0(@types/node@20.19.27)(tsx@4.21.0))':
+    dependencies:
+      '@vitest/spy': 4.0.16
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 7.3.0(@types/node@20.19.27)(tsx@4.21.0)
 
   '@vitest/mocker@4.0.16(vite@7.3.0(@types/node@25.0.3)(tsx@4.21.0))':
     dependencies:
@@ -5840,7 +5848,7 @@ snapshots:
   vitest@4.0.16(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(jsdom@25.0.1)(tsx@4.21.0):
     dependencies:
       '@vitest/expect': 4.0.16
-      '@vitest/mocker': 4.0.16(vite@7.3.0(@types/node@25.0.3)(tsx@4.21.0))
+      '@vitest/mocker': 4.0.16(vite@7.3.0(@types/node@20.19.27)(tsx@4.21.0))
       '@vitest/pretty-format': 4.0.16
       '@vitest/runner': 4.0.16
       '@vitest/snapshot': 4.0.16
@@ -5981,10 +5989,10 @@ snapshots:
     dependencies:
       buffer-crc32: 0.2.13
 
-  zod-to-json-schema@3.25.1(zod@3.25.76):
+  zod-to-json-schema@3.25.1(zod@4.3.5):
     dependencies:
-      zod: 3.25.76
+      zod: 4.3.5
 
-  zod@3.25.76: {}
+  zod@4.3.5: {}
 
   zwitch@2.0.4: {}
